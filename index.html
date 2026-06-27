@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DMAIC2 模擬版 v2</title>
+<title>DMAIC2 模擬版 v3</title>
 <style>
-:root {
+:root{
   --green:#1D9E75;--green-bg:#E1F5EE;--green-bd:#0F6E56;
   --amber:#BA7517;--amber-bg:#FAEEDA;--amber-bd:#854F0B;
   --gray:#5F5E5A;--gray-bg:#F1EFE8;--gray-bd:#B4B2A9;
@@ -32,7 +32,7 @@ h3{font-size:14px;font-weight:600;margin-bottom:8px;}
 .m3{background:var(--purple-bg);color:var(--purple);}
 input[type=text],textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:6px;font-size:14px;color:var(--text);background:var(--surface);font-family:inherit;transition:border-color .15s;}
 input[type=text]:focus,textarea:focus{outline:none;border-color:var(--green);}
-textarea{resize:vertical;min-height:64px;}
+textarea{resize:vertical;}
 label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(--muted);}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px;}
 .full{margin-bottom:14px;}
@@ -41,8 +41,9 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 .btn:disabled{opacity:.45;cursor:not-allowed;}
 .btn-primary{background:var(--green);color:#fff;}
 .btn-secondary{background:var(--gray-bg);color:var(--text);border:1px solid var(--border);}
+.btn-ai{background:var(--blue);color:#fff;}
 .btn-sm{padding:5px 12px;font-size:13px;}
-.gap12{display:flex;gap:12px;flex-wrap:wrap;}
+.gap12{display:flex;gap:12px;flex-wrap:wrap;align-items:center;}
 .mt8{margin-top:8px;}
 .mt16{margin-top:16px;}
 .hidden{display:none!important;}
@@ -57,32 +58,39 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 .ai-box{background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:8px;padding:14px 16px;margin-top:12px;font-size:13px;}
 .ai-label{font-size:11px;font-weight:700;color:var(--blue);margin-bottom:6px;}
 
+/* AI 辨識結果提示 */
+.ai-detect-banner{background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:13px;color:var(--blue);display:flex;align-items:center;gap:8px;}
+
 /* 七因子格 */
 .factors-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-bottom:20px;}
-.factor-card{border:1px solid var(--border);border-radius:10px;padding:16px;background:var(--surface);}
+.factor-card{border:1px solid var(--border);border-radius:10px;padding:16px;background:var(--surface);transition:border-color .2s;}
 .factor-card.has-check{border-color:var(--green);}
-.factor-card.clinical-card{border-color:var(--amber-bd);background:var(--amber-bg);}
+.factor-card.clinical-card{border-color:var(--amber-bd);background:#fffdf8;}
 .factor-card.clinical-card.has-check{border-color:var(--amber);}
+.factor-card.error{border-color:var(--red)!important;}
 .factor-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border);}
 .factor-icon{font-size:18px;}
-.factor-name{font-weight:700;font-size:14px;}
-.factor-required{font-size:11px;color:var(--red);margin-left:auto;}
+.factor-name{font-weight:700;font-size:14px;flex:1;}
+.factor-required{font-size:11px;color:var(--red);}
 .factor-card.has-check .factor-required{color:var(--green);}
 
 /* 勾選項目 */
 .check-list{list-style:none;margin-bottom:10px;}
-.check-list li{margin-bottom:6px;}
-.check-list label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;font-weight:400;color:var(--text);margin:0;}
+.check-list li{margin-bottom:5px;}
+.check-list label{display:flex;align-items:flex-start;gap:8px;cursor:pointer;font-size:13px;font-weight:400;color:var(--text);margin:0;padding:4px 6px;border-radius:5px;transition:background .15s;}
+.check-list label:hover{background:var(--gray-bg);}
 .check-list input[type=checkbox]{width:16px;height:16px;margin-top:2px;accent-color:var(--green);flex-shrink:0;cursor:pointer;}
 .check-list li.pending label{color:var(--amber);}
 .check-list li.na label{color:var(--muted);}
-.clinical-note{font-size:12px;color:var(--amber);font-style:italic;margin-bottom:10px;padding:8px 10px;background:rgba(186,117,23,.08);border-radius:6px;}
 
-/* 補充欄 */
+/* AI 自動勾選高亮 */
+.check-list li.ai-detected label{background:var(--blue-bg);border-radius:5px;}
+.check-list li.ai-detected label::after{content:'　AI';font-size:10px;font-weight:700;color:var(--blue);margin-left:4px;}
+
+.clinical-note{font-size:12px;color:var(--amber);font-style:italic;margin-bottom:10px;padding:8px 10px;background:rgba(186,117,23,.08);border-radius:6px;}
 .supplement-label{font-size:12px;color:var(--muted);margin-bottom:4px;margin-top:10px;}
 .factor-error{font-size:12px;color:var(--red);margin-top:6px;display:none;}
 .factor-card.error .factor-error{display:block;}
-.factor-card.error{border-color:var(--red)!important;}
 
 /* 信心度 */
 .confidence-bar{display:flex;align-items:center;gap:10px;margin-top:8px;}
@@ -106,14 +114,16 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 .risk-item{margin-bottom:10px;padding-bottom:10px;border-bottom:1px dashed var(--border);}
 .risk-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none;}
 .verify-list{margin-top:8px;padding-left:0;list-style:none;}
-.verify-list li{padding:4px 0 4px 40px;position:relative;font-size:13px;}
+.verify-list li{padding:4px 0 4px 48px;position:relative;font-size:13px;margin-bottom:4px;}
 .verify-list li .step-no{position:absolute;left:0;font-weight:700;color:var(--green);}
 .iso-note{font-size:11px;color:var(--muted);font-style:italic;}
 .tag{display:inline-block;font-size:11px;font-weight:600;padding:2px 7px;border-radius:20px;margin-right:4px;}
 .tag-pending{background:var(--amber-bg);color:var(--amber-bd);}
+.tag-ai{background:var(--blue-bg);color:var(--blue-bd);}
 
 /* spinner */
-.spinner{display:inline-block;width:14px;height:14px;border:2px solid var(--border);border-top-color:var(--green);border-radius:50%;animation:spin .7s linear infinite;}
+.spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
+.spinner-dark{border-color:var(--border);border-top-color:var(--green);}
 @keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
@@ -125,11 +135,11 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
       <h1>DMAIC2　CAPA 分析工具</h1>
       <div style="font-size:13px;color:var(--muted);margin-top:2px">ISO 13485 根本原因分析 + 試驗計畫書</div>
     </div>
-    <span class="badge">模擬版 v2</span>
+    <span class="badge">模擬版 v3</span>
   </div>
 
   <div class="sim-banner">
-    模擬模式：AI 回應由預設資料模擬，不呼叫真實 API。流程驗證 OK 後轉換為 API 版本。
+    模擬模式：AI 辨識由關鍵字比對模擬，不呼叫真實 API。流程驗證 OK 後轉換為 API 版本。
   </div>
 
   <div class="step-bar">
@@ -139,19 +149,27 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
     <div class="step-pill" id="pill-4">④ 試驗計畫</div>
   </div>
 
-  <!-- 模組一 -->
+  <!-- ── 模組一：器材識別 ── -->
   <div class="card" id="section-1">
     <div class="card-header">
       <span class="module-tag m1">模組一</span>
-      <h2 style="margin:0">醫療器材識別</h2>
+      <h2 style="margin:0">醫療器材識別 + CAPA 問題描述</h2>
     </div>
     <div class="row">
-      <div><label>器材名稱</label><input type="text" id="device-name" placeholder="例：血液透析導管"></div>
-      <div><label>產品代碼 / 型號</label><input type="text" id="device-code" placeholder="例：DQJ / 14Fr"></div>
+      <div><label>器材名稱</label><input type="text" id="device-name" placeholder="例：血液透析導管" value="血液透析導管"></div>
+      <div><label>產品代碼 / 型號</label><input type="text" id="device-code" placeholder="例：DQJ / 14Fr" value="雙濾網設計 / Venous Chamber"></div>
     </div>
     <div class="full">
-      <label>問題描述</label>
-      <textarea id="problem-desc" placeholder="描述發生的問題、症狀、發現時機…"></textarea>
+      <label>CAPA 問題描述（可貼入完整描述，AI 將輔助辨識因子）</label>
+      <textarea id="problem-desc" style="min-height:140px">透析過程發生血液阻塞，以空針筒於連接V端穿刺針處管路抽出血塊。
+經了解，該病人為Heparin用量正常之病人：Priming 1000u、loading 500u、maintain 250u/hr，且過去未出現類似情形。
+收針後Tubing管路內均無出現血塊，因為本型號為雙濾網設計，客戶質疑為何仍有血塊於管路內出現。
+
+根本原因分析：
+1、靜脈滴口室濾網附近局部血流停滯或渦流造成凝血。
+2、雙濾網代表增加阻擋及過濾血塊，也表示會增加血流渦流及流速停滯問題，增加凝血血塊機率。
+3、Heparin 處方正常但當次實際抗凝效果不足，可能與個體差異、heparin resistance 或暫時性高凝狀態有關。
+4、穿刺針位、靜脈回流阻力、血管通路狹窄或血流短暫中斷造成局部低流速。</textarea>
     </div>
     <div class="gap12">
       <button class="btn btn-primary" onclick="runModule1()">
@@ -165,26 +183,41 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
     </div>
   </div>
 
-  <!-- 模組二：七因子勾選 -->
+  <!-- ── 模組二：七因子勾選 ── -->
   <div class="card hidden" id="section-2">
     <div class="card-header">
       <span class="module-tag m2">模組二</span>
       <h2 style="margin:0">CAPA 七因子分析</h2>
     </div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:16px">
-      每個因子<b>至少勾選一項</b>才能繼續。可複選。最後一欄可補充說明。
+    <p style="font-size:13px;color:var(--muted);margin-bottom:14px">
+      每個因子<b>至少勾選一項</b>才能繼續。可複選。也可先按「AI 輔助辨識」讓系統建議後再調整。
     </p>
+
+    <!-- AI 辨識按鈕 -->
+    <div style="margin-bottom:16px;padding:14px 16px;background:var(--blue-bg);border:1px solid var(--blue-bd);border-radius:8px;">
+      <div style="font-size:13px;color:var(--blue-bd);margin-bottom:10px;font-weight:600">AI 輔助辨識</div>
+      <div style="font-size:13px;color:var(--muted);margin-bottom:10px">系統將分析問題描述，自動勾選對應因子選項。勾選結果以藍底標示，你可以直接增加或取消。</div>
+      <div class="gap12">
+        <button class="btn btn-ai" onclick="runAIDetect()">
+          <span id="ai-spin" class="spinner hidden"></span>
+          AI 輔助辨識
+        </button>
+        <button class="btn btn-secondary btn-sm" onclick="clearAIDetect()">清除 AI 辨識</button>
+        <span id="ai-detect-result" style="font-size:13px;color:var(--blue);"></span>
+      </div>
+    </div>
+
     <div class="factors-grid" id="factors-grid"></div>
     <div class="gap12">
       <button class="btn btn-primary" onclick="runModule2()">
-        <span id="m2-spin" class="spinner hidden"></span>
+        <span id="m2-spin" class="spinner hidden" style="border-color:rgba(255,255,255,.4);border-top-color:#fff;"></span>
         AI 評估信心度
       </button>
-      <button class="btn btn-secondary btn-sm" onclick="resetFactors()">重置</button>
+      <button class="btn btn-secondary btn-sm" onclick="resetFactors()">重置全部</button>
     </div>
   </div>
 
-  <!-- 模組三：信心度 + 風險 -->
+  <!-- ── 模組三：信心度 + 風險 ── -->
   <div class="card hidden" id="section-3">
     <div class="card-header">
       <span class="module-tag m2">模組三</span>
@@ -203,13 +236,13 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
     </div>
   </div>
 
-  <!-- 模組四：試驗計畫書 -->
+  <!-- ── 模組四：試驗計畫書 ── -->
   <div class="card hidden" id="section-4">
     <div class="card-header">
       <span class="module-tag m3">模組四</span>
       <h2 style="margin:0">試驗計畫書（草稿）</h2>
     </div>
-    <div id="test-plan-output" style="font-size:14px;line-height:1.8"></div>
+    <div id="test-plan-output" style="font-size:14px;line-height:1.9"></div>
     <div style="margin-top:16px;padding:10px 14px;background:var(--amber-bg);border-radius:8px;font-size:13px;color:var(--amber);">
       ISO 條款建議由 AI 產出，正式文件需 RA 確認版本與適用性。
     </div>
@@ -222,7 +255,9 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 </div>
 
 <script>
-/* ── 資料定義 ── */
+/* ════════════════════════════
+   因子定義
+═════════════════════════════ */
 const FACTORS = [
   { key:'人', icon:'👤', label:'人（Man）',
     options:['操作手法不一致','人員訓練不足／未受訓','操作程序理解有誤','新人上線未充分監督','疲勞或輪班造成失誤','人員離職造成知識斷層','無異常（此因子不相關）','待調查'] },
@@ -242,107 +277,207 @@ const FACTORS = [
     options:['無相關臨床資訊（一般狀況）','懷疑使用方式不當（無法確認）','醫護人員使用培訓不足','適應症外使用（Off-label use）','不良事件已回報 TFDA／FDA','有客訴紀錄但細節不明','有司法調查或訴訟紀錄','建議列入 PMS 上市後監控','待調查'] }
 ];
 
-const MOCK_510K = [
-  {pdf_ref:'K141051',item:'血液回流壓力測試（≥5 個流量點）'},
-  {pdf_ref:'K141051',item:'Hub 接合強度拉伸測試'},
-  {pdf_ref:'K040666',item:'生物相容性評估（ISO 10993）'},
-  {pdf_ref:'K250836',item:'流量 / 壓力特性曲線確認'}
+/* ════════════════════════════
+   AI 辨識關鍵字對應表（模擬版）
+   API 版改為送 Claude 回傳 JSON
+═════════════════════════════ */
+const AI_RULES = [
+  { key:'人', option:'待調查',          keywords:['個體差異','heparin resistance','高凝狀態','病人'] },
+  { key:'機', option:'設備維護保養未執行', keywords:['濾網','雙濾網','阻擋','渦流','停滯'] },
+  { key:'機', option:'設備參數漂移',     keywords:['流速','流量','低流速'] },
+  { key:'料', option:'待調查',          keywords:[] },
+  { key:'法', option:'驗證方法不適切',   keywords:['處方','抗凝','heparin','Heparin'] },
+  { key:'法', option:'SOP 版本過舊未更新',keywords:['SOP','流程','priming','Priming'] },
+  { key:'環', option:'無異常（此因子不相關）', keywords:[] },
+  { key:'運輸與儲存', option:'無異常（此因子不相關）', keywords:[] },
+  { key:'測量', option:'量測方法無法有效偵測此問題點', keywords:['回流阻力','血流短暫','無法量測','偵測','攔截'] },
+  { key:'臨床', option:'懷疑使用方式不當（無法確認）', keywords:['穿刺針位','通路狹窄','臨床','醫護','操作'] },
+  { key:'臨床', option:'建議列入 PMS 上市後監控',     keywords:['客訴','質疑','類似情形','監控'] },
 ];
 
+/* 預設兜底：若某因子沒有任何規則命中，自動勾「待調查」 */
+const AI_DEFAULT = { '料':'待調查', '環':'無異常（此因子不相關）', '運輸與儲存':'無異常（此因子不相關）' };
+
+/* ════════════════════════════
+   模擬資料
+═════════════════════════════ */
+const MOCK_510K = [
+  {pdf_ref:'K141051', item:'靜脈回流壓力測試（≥5 個流量點）'},
+  {pdf_ref:'K141051', item:'Venous Chamber 血栓形成評估'},
+  {pdf_ref:'K040666', item:'生物相容性評估（ISO 10993）'},
+  {pdf_ref:'K250836', item:'流量 / 壓力特性曲線確認'},
+  {pdf_ref:'K250836', item:'Heparin 相容性與塗層驗證'}
+];
 const MOCK_VERIFICATIONS = {
-  '人':[{item:'IFU 操作說明審查',tool:'IFU',priority:1,reason:'先確認說明書是否清楚'}],
-  '機':[{item:'Gage R&R 量測系統分析',tool:'MSA',priority:1,reason:'先釐清量測誤差來源'},{item:'SPC 製程管制圖建立',tool:'SPC',priority:2,reason:'量測系統確認後持續監控'}],
+  '人':[{item:'IFU 操作說明審查與修訂',tool:'IFU',priority:1,reason:'確認使用說明是否涵蓋凝血風險說明'}],
+  '機':[{item:'Venous Chamber 濾網設計流場模擬或壓差測試',tool:'量測方法開發',priority:1,reason:'驗證雙濾網是否造成局部停滯'},
+        {item:'SPC 製程管制圖：濾網孔徑監控',tool:'SPC',priority:2,reason:'確保製程穩定性'}],
   '料':[{item:'供應商稽核',tool:'供應商',priority:1,reason:'確認來料規格一致性'}],
-  '法':[{item:'製程確效 IQ/OQ/PQ',tool:'製程確效',priority:1,iso_suggestion:'§7.5.6',reason:'製程變更後需確效'}],
-  '環':[{item:'環境條件量測方法確認',tool:'量測方法開發',priority:1,reason:'確認量測方式後再監控'}],
-  '運輸與儲存':[{item:'物流廠商稽核',tool:'供應商',priority:1,reason:'確認第三方物流管控能力'}],
-  '測量':[{item:'MSA Gage R&R',tool:'MSA',priority:1,reason:'直接針對量測系統核心問題'}],
-  '臨床':[{item:'建議列入 PMS 上市後監控計畫',tool:'風險文件',priority:1,reason:'臨床資訊難以即時取得，建議長期追蹤'}]
+  '法':[{item:'Heparin 用量協議與病人凝血狀態評估流程審查',tool:'IFU',priority:1,reason:'確認現行 SOP 是否足以應對高凝狀態病人'},
+        {item:'製程確效 IQ/OQ/PQ',tool:'製程確效',priority:2,iso_suggestion:'§7.5.6',reason:'製程變更或驗證不足需補確效'}],
+  '環':[{item:'環境條件確認',tool:'量測方法開發',priority:1,reason:'確認無環境干擾因子'}],
+  '運輸與儲存':[{item:'物流管控確認',tool:'供應商',priority:1,reason:'確認儲運條件無異常'}],
+  '測量':[{item:'靜脈回流壓力測試方法驗證（MSA）',tool:'MSA',priority:1,reason:'確認量測方法能有效偵測低流速凝血風險'},
+          {item:'體外血流模型評估（Flow Model）',tool:'量測方法開發',priority:2,reason:'模擬臨床使用情境下的血流狀態'}],
+  '臨床':[{item:'建議列入 PMS 上市後監控計畫，追蹤同類事件發生率',tool:'風險文件',priority:1,iso_suggestion:'§8.5.2',reason:'臨床資訊難以即時取得，建議長期追蹤'}]
 };
 
+/* ════════════════════════════
+   狀態
+═════════════════════════════ */
 const STATE = { device:{}, verificationItems:[], factors:{}, confidenceResults:[], riskOutputs:{high:[],medium:[],low:[]}, testPlan:{} };
 
-/* ── 工具 ── */
+/* ════════════════════════════
+   工具函式
+═════════════════════════════ */
 function setStep(n){[1,2,3,4].forEach(i=>{const p=document.getElementById(`pill-${i}`);p.classList.remove('active','done');if(i<n)p.classList.add('done');if(i===n)p.classList.add('active');});}
 function show(id){document.getElementById(id)?.classList.remove('hidden');}
-function hide(id){document.getElementById(id)?.classList.add('hidden');}
-function spin(id,on){document.getElementById(id)?.classList.toggle('hidden',!on);}
 function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
-function levelBadge(level){const m={'高':['badge-high','高度風險'],'中':['badge-mid','中度風險'],'低':['badge-low','低風險']};const[cls,text]=m[level]||['badge-low','未知'];return `<span class="level-badge ${cls}">${text}</span>`;}
+function spin(id,on){document.getElementById(id)?.classList.toggle('hidden',!on);}
+function levelBadge(l){const m={高:['badge-high','高度風險'],中:['badge-mid','中度風險'],低:['badge-low','低風險']};const[c,t]=m[l]||['badge-low','未知'];return `<span class="level-badge ${c}">${t}</span>`;}
 
-/* ── 模組一 ── */
+/* ════════════════════════════
+   模組一
+═════════════════════════════ */
 async function runModule1(){
   const name=document.getElementById('device-name').value.trim();
-  const code=document.getElementById('device-code').value.trim();
   const prob=document.getElementById('problem-desc').value.trim();
   if(!name||!prob){alert('請填寫器材名稱與問題描述');return;}
-  STATE.device={name,code,problem_description:prob};
+  STATE.device={name, code:document.getElementById('device-code').value.trim(), problem_description:prob};
   spin('m1-spin',true);await sleep(1100);spin('m1-spin',false);
   STATE.verificationItems=MOCK_510K;
   document.getElementById('m1-items').innerHTML=
     MOCK_510K.map((v,i)=>`<div style="padding:5px 0;border-bottom:1px dashed var(--border);font-size:13px"><b>${i+1}. ${v.item}</b> <span style="color:var(--muted)">[${v.pdf_ref}]</span></div>`).join('')+
     `<div style="margin-top:8px;font-size:12px;color:var(--muted)">共萃取 ${MOCK_510K.length} 項，已存入 dmaic2_data.json</div>`;
-  show('m1-result');
+  document.getElementById('m1-result').classList.remove('hidden');
   buildFactorsGrid();
   show('section-2');
   setStep(2);
   document.getElementById('section-2').scrollIntoView({behavior:'smooth'});
 }
 
-/* ── 建立七因子勾選格 ── */
+/* ════════════════════════════
+   建立七因子格
+═════════════════════════════ */
 function buildFactorsGrid(){
-  const grid=document.getElementById('factors-grid');
-  grid.innerHTML=FACTORS.map(f=>{
+  document.getElementById('factors-grid').innerHTML=FACTORS.map(f=>{
     const isClinical=f.clinical||false;
     const clinicalNote=isClinical?`<div class="clinical-note">臨床資訊通常難以取得，以下為建議調查方向，僅供參考。如有具體紀錄請於補充欄說明。</div>`:'';
     const items=f.options.map(opt=>{
       const isPending=opt==='待調查';
       const isNA=opt.startsWith('無異常');
-      const liClass=isPending?'pending':isNA?'na':'';
-      return `<li class="${liClass}">
+      return `<li class="${isPending?'pending':isNA?'na':''}" id="li-${f.key}-${encodeOpt(opt)}">
         <label>
           <input type="checkbox" name="${f.key}" value="${opt}" onchange="onCheck('${f.key}')">
           ${opt}
         </label>
       </li>`;
     }).join('');
-    return `
-      <div class="factor-card${isClinical?' clinical-card':''}" id="fc-${f.key}">
-        <div class="factor-header">
-          <span class="factor-icon">${f.icon}</span>
-          <span class="factor-name">${f.label}</span>
-          <span class="factor-required" id="req-${f.key}">必填</span>
-        </div>
-        ${clinicalNote}
-        <ul class="check-list">${items}</ul>
-        <div class="supplement-label">補充說明（選填）</div>
-        <textarea id="ft-${f.key}" placeholder="可填入特定情境、數據或備註…" style="min-height:48px;font-size:13px"></textarea>
-        <div class="factor-error" id="err-${f.key}">請至少勾選一項</div>
-      </div>`;
+    return `<div class="factor-card${isClinical?' clinical-card':''}" id="fc-${f.key}">
+      <div class="factor-header">
+        <span class="factor-icon">${f.icon}</span>
+        <span class="factor-name">${f.label}</span>
+        <span class="factor-required" id="req-${f.key}">必填</span>
+      </div>
+      ${clinicalNote}
+      <ul class="check-list">${items}</ul>
+      <div class="supplement-label">補充說明（選填）</div>
+      <textarea id="ft-${f.key}" placeholder="可填入特定情境、數據或備註…" style="min-height:48px;font-size:13px"></textarea>
+      <div class="factor-error" id="err-${f.key}">請至少勾選一項</div>
+    </div>`;
   }).join('');
 }
+
+function encodeOpt(s){return s.replace(/[^a-zA-Z0-9]/g,'_').slice(0,20);}
 
 function onCheck(key){
   const checked=document.querySelectorAll(`input[name="${key}"]:checked`).length>0;
   const card=document.getElementById(`fc-${key}`);
-  const req=document.getElementById(`req-${key}`);
   card.classList.toggle('has-check',checked);
   card.classList.remove('error');
   document.getElementById(`err-${key}`).style.display='none';
-  req.textContent=checked?'✓':'必填';
+  document.getElementById(`req-${key}`).textContent=checked?'✓':'必填';
+}
+
+/* ════════════════════════════
+   AI 輔助辨識（模擬版關鍵字比對）
+═════════════════════════════ */
+async function runAIDetect(){
+  const text=document.getElementById('problem-desc').value;
+  if(!text.trim()){alert('請先填寫問題描述');return;}
+  spin('ai-spin',true);
+  document.getElementById('ai-detect-result').textContent='辨識中…';
+  await sleep(1200);
+  spin('ai-spin',false);
+
+  // 清除舊的 AI 標記
+  document.querySelectorAll('.check-list li').forEach(li=>li.classList.remove('ai-detected'));
+  document.querySelectorAll('.check-list input[type=checkbox]').forEach(cb=>{if(cb.dataset.aiSet)cb.checked=false;delete cb.dataset.aiSet;});
+
+  let detected=0;
+  const hit={}; // key → [options]
+
+  // 關鍵字比對
+  AI_RULES.forEach(rule=>{
+    if(!rule.keywords||rule.keywords.length===0)return;
+    const matched=rule.keywords.some(kw=>text.includes(kw));
+    if(matched){
+      if(!hit[rule.key])hit[rule.key]=[];
+      if(!hit[rule.key].includes(rule.option))hit[rule.key].push(rule.option);
+    }
+  });
+
+  // 兜底：沒命中的因子套預設
+  FACTORS.forEach(f=>{
+    if(!hit[f.key]){
+      const def=AI_DEFAULT[f.key];
+      if(def)hit[f.key]=[def];
+    }
+  });
+
+  // 套用到 UI
+  FACTORS.forEach(f=>{
+    const opts=hit[f.key]||[];
+    opts.forEach(opt=>{
+      const cb=document.querySelector(`input[name="${f.key}"][value="${opt}"]`);
+      if(cb&&!cb.checked){
+        cb.checked=true;
+        cb.dataset.aiSet='1';
+        const li=cb.closest('li');
+        if(li)li.classList.add('ai-detected');
+        detected++;
+      }
+    });
+    onCheck(f.key);
+  });
+
+  document.getElementById('ai-detect-result').textContent=`AI 辨識完成，共勾選 ${detected} 項（藍底標示）。你可以直接調整。`;
+}
+
+function clearAIDetect(){
+  document.querySelectorAll('.check-list input[type=checkbox]').forEach(cb=>{
+    if(cb.dataset.aiSet){cb.checked=false;delete cb.dataset.aiSet;}
+    cb.closest('li')?.classList.remove('ai-detected');
+  });
+  FACTORS.forEach(f=>onCheck(f.key));
+  document.getElementById('ai-detect-result').textContent='';
 }
 
 function resetFactors(){
-  document.querySelectorAll('.check-list input[type=checkbox]').forEach(cb=>cb.checked=false);
+  clearAIDetect();
+  document.querySelectorAll('.check-list input[type=checkbox]').forEach(cb=>{cb.checked=false;cb.closest('li')?.classList.remove('ai-detected');});
   FACTORS.forEach(f=>{
     document.getElementById(`fc-${f.key}`).classList.remove('has-check','error');
     document.getElementById(`req-${f.key}`).textContent='必填';
     document.getElementById(`ft-${f.key}`).value='';
     document.getElementById(`err-${f.key}`).style.display='none';
   });
+  document.getElementById('ai-detect-result').textContent='';
 }
 
-/* ── 模組二：AI 評估 ── */
+/* ════════════════════════════
+   信心度計算（模擬）
+═════════════════════════════ */
 function mockConfidence(checks,supplement){
   const hasPending=checks.includes('待調查');
   const hasNA=checks.some(c=>c.startsWith('無異常'));
@@ -350,33 +485,31 @@ function mockConfidence(checks,supplement){
   const suppLen=(supplement||'').trim().length;
   if(hasNA&&count===0)return{score:15,level:'低',reason:'勾選無異常，判斷為不相關因子'};
   if(hasPending&&count===0)return{score:45,level:'中',reason:'資訊不足，列為待調查，建議 QA 進一步確認'};
-  if(count>=2||suppLen>20)return{score:78+Math.min(suppLen,20),level:'高',reason:`勾選 ${count} 項具體問題${suppLen>20?'，補充說明充分':''}，判斷為高度相關`};
-  return{score:52,level:'中',reason:'部分資訊，相關性尚待確認'};
+  const base=count>=2?78:58;
+  const bonus=Math.min(suppLen,30);
+  return{score:Math.min(base+bonus,98),level:base>=78||suppLen>20?'高':'中',
+    reason:`勾選 ${count} 項具體問題${suppLen>10?'，補充說明充分':''}，判斷為${base>=78||suppLen>20?'高度':'部分'}相關`};
 }
 
+/* ════════════════════════════
+   模組二：AI 評估信心度
+═════════════════════════════ */
 async function runModule2(){
   let valid=true;
   FACTORS.forEach(f=>{
-    const checked=Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).map(cb=>cb.value);
-    if(checked.length===0){
-      document.getElementById(`fc-${f.key}`).classList.add('error');
-      document.getElementById(`err-${f.key}`).style.display='block';
-      valid=false;
-    }
+    const checked=Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).length;
+    const card=document.getElementById(`fc-${f.key}`);
+    if(checked===0){card.classList.add('error');document.getElementById(`err-${f.key}`).style.display='block';valid=false;}
   });
-  if(!valid){
-    document.querySelector('.factor-card.error')?.scrollIntoView({behavior:'smooth',block:'center'});
-    return;
-  }
+  if(!valid){document.querySelector('.factor-card.error')?.scrollIntoView({behavior:'smooth',block:'center'});return;}
   spin('m2-spin',true);await sleep(1300);spin('m2-spin',false);
 
   const results=FACTORS.map(f=>{
     const checks=Array.from(document.querySelectorAll(`input[name="${f.key}"]:checked`)).map(cb=>cb.value);
     const supplement=document.getElementById(`ft-${f.key}`).value.trim();
     const conf=mockConfidence(checks,supplement);
-    const hasPending=checks.includes('待調查');
-    const verifs=conf.level==='高'?(MOCK_VERIFICATIONS[f.key]||[]):[];
-    return{...f,checks,supplement,confidence:conf,hasPending,verifications:verifs};
+    return{...f,checks,supplement,confidence:conf,hasPending:checks.includes('待調查'),
+      verifications:conf.level==='高'?(MOCK_VERIFICATIONS[f.key]||[]):[]};
   });
   STATE.confidenceResults=results;
 
@@ -384,9 +517,10 @@ async function runModule2(){
   const mid=results.filter(r=>r.confidence.level==='中');
   const low=results.filter(r=>r.confidence.level==='低');
   STATE.riskOutputs={
-    high:high.map(r=>({factor:r.key,checks:r.checks,supplement:r.supplement,verifications:r.verifications,confidence:r.confidence})),
-    medium:mid.map(r=>({factor:r.key,checks:r.checks,supplement:r.supplement,hasPending:r.hasPending,investigation_items:[`確認「${r.key}」因子與問題的因果關係`,`補充具體量測數據或異常紀錄`],confidence:r.confidence})),
-    low:low.map(r=>({factor:r.key,checks:r.checks,ai_reason:r.confidence.reason}))
+    high:high.map(r=>({factor:r.key,icon:r.icon,checks:r.checks,supplement:r.supplement,verifications:r.verifications,confidence:r.confidence})),
+    medium:mid.map(r=>({factor:r.key,icon:r.icon,checks:r.checks,supplement:r.supplement,hasPending:r.hasPending,
+      investigation_items:[`確認「${r.key}」因子與問題的因果關係`,`補充具體量測數據或異常紀錄`],confidence:r.confidence})),
+    low:low.map(r=>({factor:r.key,icon:r.icon,ai_reason:r.confidence.reason}))
   };
 
   renderConfidence(results);
@@ -400,17 +534,16 @@ function renderConfidence(results){
   document.getElementById('confidence-results').innerHTML=results.map(r=>{
     const c=r.confidence;
     const cls=c.level==='高'?'level-high':c.level==='中'?'level-mid':'level-low';
-    const pendingTag=r.hasPending?`<span class="tag tag-pending">含待調查項</span>`:'';
-    const checks=r.checks.map(ch=>`<span style="font-size:12px;background:var(--gray-bg);border-radius:4px;padding:1px 6px;margin:2px;display:inline-block">${ch}</span>`).join('');
+    const aiChecks=Array.from(document.querySelectorAll(`input[name="${r.key}"][data-ai-set]:checked`)).map(cb=>cb.value);
+    const tags=aiChecks.length?`<span class="tag tag-ai">AI 辨識 ${aiChecks.length} 項</span>`:'';
+    const chips=r.checks.map(ch=>`<span style="font-size:12px;background:var(--gray-bg);border-radius:4px;padding:1px 7px;margin:2px;display:inline-block">${ch}</span>`).join('');
     return `<div style="margin-bottom:14px;padding-bottom:14px;border-bottom:1px dashed var(--border)">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-        <b>${r.icon} ${r.label}</b>${levelBadge(c.level)}${pendingTag}
-      </div>
-      <div style="margin-bottom:6px">${checks}</div>
-      ${r.supplement?`<div style="font-size:12px;color:var(--muted);margin-bottom:6px">補充：${r.supplement}</div>`:''}
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px"><b>${r.icon} ${r.label}</b>${levelBadge(c.level)}${tags}</div>
+      <div style="margin-bottom:6px">${chips}</div>
+      ${r.supplement?`<div style="font-size:12px;color:var(--muted);margin-bottom:4px">補充：${r.supplement}</div>`:''}
       <div class="confidence-bar">
         <div class="bar-track"><div class="bar-fill ${cls}" style="width:${c.score}%"></div></div>
-        <span style="font-size:12px;font-weight:700;min-width:36px;text-align:right">${c.score}</span>
+        <span style="font-size:12px;font-weight:700;min-width:32px;text-align:right">${c.score}</span>
       </div>
       <div style="font-size:12px;color:var(--muted);margin-top:4px">${c.reason}</div>
     </div>`;
@@ -422,30 +555,27 @@ function renderRisk(){
   let html='';
   if(high.length){
     html+=`<div class="risk-section risk-high"><div class="risk-title">高度風險　根源確認 + 驗證三合一</div><div class="risk-body">
-      ${high.map(r=>`<div class="risk-item"><b>${r.factor} 因子</b>
-        <ul class="verify-list mt8">
-          ${r.verifications.map((v,i)=>`<li><span class="step-no">Step${i+1}</span>${v.item}　<span style="color:var(--muted)">[${v.tool}]</span><br>
-            <span style="font-size:12px;color:var(--muted)">${v.reason}</span>
+      ${high.map(r=>`<div class="risk-item"><b>${r.icon} ${r.factor} 因子</b>
+        <ul class="verify-list mt8">${r.verifications.map((v,i)=>`
+          <li><span class="step-no">Step${i+1}</span>${v.item}　<span style="color:var(--muted)">[${v.tool}]</span>
+            <br><span style="font-size:12px;color:var(--muted)">${v.reason}</span>
             ${v.iso_suggestion?`<br><span class="iso-note">ISO ref：${v.iso_suggestion}（AI 建議，RA 確認）</span>`:''}
-          </li>`).join('')}
-        </ul>
+          </li>`).join('')}</ul>
       </div>`).join('')}
     </div></div>`;
   }
   if(medium.length){
     html+=`<div class="risk-section risk-mid"><div class="risk-title">中度風險　調查建議（相關性待確認，給 QA 執行）</div><div class="risk-body">
-      ${medium.map(r=>`<div class="risk-item"><b>${r.factor} 因子</b>
-        ${r.hasPending?`<span class="tag tag-pending" style="margin-left:8px">待調查</span>`:''}
-        <ul style="margin-top:6px;padding-left:18px;font-size:13px">
-          ${r.investigation_items.map(i=>`<li>${i}</li>`).join('')}
-        </ul>
-        ${r.supplement?`<div style="margin-top:6px;font-size:12px;color:var(--muted)">補充：${r.supplement}</div>`:''}
+      ${medium.map(r=>`<div class="risk-item"><b>${r.icon} ${r.factor} 因子</b>
+        ${r.hasPending?`<span class="tag tag-pending" style="margin-left:6px">待調查</span>`:''}
+        <ul style="margin-top:6px;padding-left:18px;font-size:13px">${r.investigation_items.map(i=>`<li>${i}</li>`).join('')}</ul>
+        ${r.supplement?`<div style="margin-top:4px;font-size:12px;color:var(--muted)">補充：${r.supplement}</div>`:''}
       </div>`).join('')}
     </div></div>`;
   }
   if(low.length){
     html+=`<div class="risk-section risk-low"><div class="risk-title">低風險　魚骨圖保留 + AI 說明理由（稽核追溯用）</div><div class="risk-body">
-      ${low.map(r=>`<div class="risk-item"><b>${r.factor} 因子</b>
+      ${low.map(r=>`<div class="risk-item"><b>${r.icon} ${r.factor} 因子</b>
         <div style="margin-top:4px;font-size:13px;color:var(--muted)">${r.ai_reason}</div>
       </div>`).join('')}
     </div></div>`;
@@ -453,7 +583,9 @@ function renderRisk(){
   document.getElementById('risk-results').innerHTML=html||'<div style="color:var(--muted);font-size:13px">無資料</div>';
 }
 
-/* ── 模組三：試驗計畫書 ── */
+/* ════════════════════════════
+   模組三：試驗計畫書
+═════════════════════════════ */
 async function runModule3(){
   spin('m3-spin',true);await sleep(900);spin('m3-spin',false);
   const d=STATE.device;
@@ -462,33 +594,37 @@ async function runModule3(){
   let html=`
     <div style="border-bottom:2px solid var(--green);padding-bottom:12px;margin-bottom:16px">
       <h2 style="font-size:17px">CAPA 試驗計畫書（草稿）</h2>
-      <div style="color:var(--muted);font-size:13px">器材：${d.name||'—'}　｜　日期：${now}</div>
+      <div style="color:var(--muted);font-size:13px">器材：${d.name||'—'}　型號：${d.code||'—'}　｜　日期：${now}</div>
     </div>
-    <div style="margin-bottom:12px"><b>問題描述：</b>${d.problem_description||'—'}</div>
-    <div style="margin-bottom:12px"><b>510k 參考驗證項：</b><br>${STATE.verificationItems.map(v=>`・${v.item}（${v.pdf_ref}）`).join('<br>')}</div>
+    <div style="margin-bottom:12px;padding:10px 14px;background:var(--gray-bg);border-radius:6px;font-size:13px">
+      <b>CAPA 問題描述：</b><br>${(d.problem_description||'').replace(/\n/g,'<br>')}
+    </div>
+    <div style="margin-bottom:12px"><b>510k 參考驗證項：</b><br>
+      ${STATE.verificationItems.map(v=>`<span style="font-size:13px">・${v.item}（${v.pdf_ref}）</span>`).join('<br>')}
+    </div>
     <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">`;
   if(high.length){
     html+=`<h3>一、高度風險項目（根源確認 + 驗證計畫）</h3>`;
     high.forEach((r,i)=>{
-      html+=`<p style="margin-top:8px"><b>${i+1}. ${r.factor} 因子</b></p>
-        <ul style="padding-left:20px;font-size:13px;margin-bottom:8px">
-          ${r.verifications.map((v,j)=>`<li><b>Step ${j+1}：</b>${v.item}（${v.tool}）— ${v.reason}${v.iso_suggestion?'　ISO ref: '+v.iso_suggestion:''}</li>`).join('')}
+      html+=`<p style="margin-top:10px"><b>${i+1}. ${r.icon} ${r.factor} 因子</b></p>
+        <ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">
+          ${r.verifications.map((v,j)=>`<li style="margin-bottom:4px"><b>Step ${j+1}：</b>${v.item}（${v.tool}）—　${v.reason}${v.iso_suggestion?'　<span style="color:var(--muted);font-size:12px">ISO ref: '+v.iso_suggestion+'</span>':''}</li>`).join('')}
         </ul>`;
     });
   }
   if(medium.length){
-    html+=`<h3 style="margin-top:12px">二、中度風險項目（調查建議）</h3>`;
+    html+=`<h3 style="margin-top:14px">二、中度風險項目（調查建議）</h3>`;
     medium.forEach((r,i)=>{
-      html+=`<p style="margin-top:8px"><b>${i+1}. ${r.factor} 因子</b>（相關性待確認）</p>
-        <ul style="padding-left:20px;font-size:13px;margin-bottom:8px">
+      html+=`<p style="margin-top:10px"><b>${i+1}. ${r.icon} ${r.factor} 因子</b>（相關性待確認）</p>
+        <ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">
           ${r.investigation_items.map(it=>`<li>${it}</li>`).join('')}
         </ul>`;
     });
   }
   if(low.length){
-    html+=`<h3 style="margin-top:12px">三、低風險項目（魚骨圖記錄）</h3>
-      <ul style="padding-left:20px;font-size:13px;margin-bottom:8px">
-        ${low.map(r=>`<li><b>${r.factor}：</b>${r.ai_reason}</li>`).join('')}
+    html+=`<h3 style="margin-top:14px">三、低風險項目（魚骨圖記錄）</h3>
+      <ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">
+        ${low.map(r=>`<li><b>${r.icon} ${r.factor}：</b>${r.ai_reason}</li>`).join('')}
       </ul>`;
   }
   STATE.testPlan={generated_at:new Date().toISOString()};
@@ -498,28 +634,20 @@ async function runModule3(){
   document.getElementById('section-4').scrollIntoView({behavior:'smooth'});
 }
 
-/* ── 匯出 JSON ── */
+/* ════════════════════════════
+   匯出 JSON
+═════════════════════════════ */
 function exportJSON(){
   const data={
-    _schema_version:'2.0',
-    session_id:`dmaic2-${Date.now()}`,
-    created_at:new Date().toISOString(),
-    device_info:STATE.device,
-    verification_items:STATE.verificationItems,
-    capa_factors:{
-      problem_description:STATE.device.problem_description,
-      factors:STATE.confidenceResults.map(r=>({
-        category:r.key,checks:r.checks,supplement:r.supplement,confidence:r.confidence
-      }))
-    },
-    risk_outputs:STATE.riskOutputs,
-    test_plan:STATE.testPlan
+    _schema_version:'2.0',session_id:`dmaic2-${Date.now()}`,created_at:new Date().toISOString(),
+    device_info:STATE.device,verification_items:STATE.verificationItems,
+    capa_factors:{problem_description:STATE.device.problem_description,
+      factors:STATE.confidenceResults.map(r=>({category:r.key,checks:r.checks,supplement:r.supplement,confidence:r.confidence}))},
+    risk_outputs:STATE.riskOutputs,test_plan:STATE.testPlan
   };
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a=document.createElement('a');
-  a.href=URL.createObjectURL(blob);
-  a.download=`dmaic2_${Date.now()}.json`;
-  a.click();
+  a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));
+  a.download=`dmaic2_${Date.now()}.json`;a.click();
 }
 </script>
 </body>
