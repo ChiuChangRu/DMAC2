@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DMAIC2 模擬版 v5</title>
+<title>DMAIC2 模擬版 v6</title>
 <style>
 :root{
   --green:#1D9E75;--green-bg:#E1F5EE;--green-bd:#0F6E56;
@@ -134,30 +134,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 .tag-ai{background:var(--blue-bg);color:var(--blue-bd);}
 
 /* 魚骨圖 */
-#fishbone-wrap{width:100%;min-height:540px;border-radius:10px;overflow:auto;border:1px solid var(--border);background:#fbfaf6;}
-.fishbone-svg{display:block;width:100%;min-width:760px;height:auto;background:#fbfaf6;}
-.fishbone-empty{height:560px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;}
-
-/* 報告 */
-.report-paper{background:#fff;border:1px solid var(--border);border-radius:8px;padding:24px 28px;font-size:13px;line-height:1.8;color:var(--text);}
-.report-title{border-bottom:3px solid var(--green-bd);padding-bottom:12px;margin-bottom:18px;}
-.report-title h2{font-size:22px;margin:0 0 6px;color:#1f2a24;}
-.report-meta{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:14px 0;background:#fff;}
-.report-meta div{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12px;}
-.report-meta div:nth-child(odd){border-right:1px solid var(--border);}
-.report-meta div:nth-last-child(-n+2){border-bottom:none;}
-.report-section{margin-top:18px;}
-.report-section h3{font-size:15px;border-left:4px solid var(--green);padding-left:8px;margin-bottom:8px;color:#1f2a24;}
-.report-table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:12px;}
-.report-table th,.report-table td{border:1px solid var(--border);padding:7px 8px;vertical-align:top;text-align:left;}
-.report-table th{background:var(--gray-bg);font-weight:700;}
-.report-note{background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:6px;padding:9px 12px;color:var(--amber-bd);font-size:12px;margin-top:12px;}
-.history-list{display:grid;gap:10px;margin-top:10px;}
-.history-item{border:1px solid var(--border);border-radius:8px;padding:12px;background:#fff;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;}
-.history-title{font-weight:700;font-size:14px;}
-.history-meta{font-size:12px;color:var(--muted);margin-top:2px;}
-.history-preview{margin-top:16px;border-top:1px solid var(--border);padding-top:16px;}
-.empty-state{padding:22px;border:1px dashed var(--border);border-radius:8px;color:var(--muted);font-size:13px;text-align:center;background:#fff;}
+#fishbone-wrap{width:100%;height:480px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--surface);}
 
 /* spinner */
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
@@ -168,10 +145,6 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
   .sidenav{display:none;}
   .main{margin-left:0;padding:16px 12px 60px;}
   .factors-grid{grid-template-columns:1fr;}
-  .report-meta{grid-template-columns:1fr;}
-  .report-meta div:nth-child(odd){border-right:none;}
-  .report-meta div:nth-last-child(2){border-bottom:1px solid var(--border);}
-  .history-item{display:block;}
 }
 </style>
 </head>
@@ -181,7 +154,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 <nav class="sidenav">
   <div class="sidenav-logo">
     <h1>DMAIC2<br>CAPA 分析工具</h1>
-    <span class="ver">模擬版 v5</span>
+    <span class="ver">模擬版 v6</span>
   </div>
   <div class="nav-steps">
 
@@ -224,17 +197,8 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
     <div class="nav-step" id="nav-5">
       <div class="nav-step-circle">5</div>
       <div class="nav-step-text">
-        <div class="nav-step-label">初步報告</div>
-        <div class="nav-step-sub">CAPA + 試驗計畫</div>
-      </div>
-    </div>
-    <div class="nav-connector" id="nc-5"></div>
-
-    <div class="nav-step" id="nav-6">
-      <div class="nav-step-circle">6</div>
-      <div class="nav-step-text">
-        <div class="nav-step-label">歷史報告</div>
-        <div class="nav-step-sub">存檔 + 閱覽</div>
+        <div class="nav-step-label">試驗計畫書</div>
+        <div class="nav-step-sub">匯出 + JSON</div>
       </div>
     </div>
 
@@ -252,7 +216,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
       <div style="font-size:13px;color:var(--muted);margin-top:2px">ISO 13485 根本原因分析 + 魚骨圖 + 試驗計畫書</div>
     </div>
   </div>
-  <div class="sim-banner">模擬模式：AI 辨識由關鍵字比對模擬，510k 驗證項自動篩選相關項目，魚骨圖由 SVG 繪製。</div>
+  <div class="sim-banner">模擬模式：AI 辨識由關鍵字比對模擬，510k 驗證項自動篩選相關項目，魚骨圖由 ECharts 繪製。</div>
 
   <!-- 模組一 -->
   <div class="card" id="section-1">
@@ -319,41 +283,27 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
     <div id="fishbone-wrap"></div>
     <div class="gap12 mt16">
       <button class="btn btn-secondary btn-sm" onclick="downloadFishbone()">下載魚骨圖 PNG</button>
-      <button class="btn btn-primary" onclick="runModule3()"><span id="m3-spin" class="spinner hidden"></span>產出初步報告</button>
+      <button class="btn btn-primary" onclick="runModule3()"><span id="m3-spin" class="spinner hidden"></span>產出試驗計畫書</button>
     </div>
   </div>
 
-  <!-- 模組五：初步報告 -->
+  <!-- 模組五：試驗計畫書 -->
   <div class="card hidden" id="section-5">
-    <div class="card-header"><span class="module-tag m3">模組五</span><h2 style="margin:0">CAPA 初步報告與試驗計畫</h2></div>
+    <div class="card-header"><span class="module-tag m3">模組五</span><h2 style="margin:0">試驗計畫書（草稿）</h2></div>
     <div id="test-plan-output" style="font-size:14px;line-height:1.9"></div>
     <div style="margin-top:16px;padding:10px 14px;background:var(--amber-bg);border-radius:8px;font-size:13px;color:var(--amber);">
       ISO 條款建議由 AI 產出，正式文件需 RA 確認版本與適用性。
     </div>
     <div class="gap12 mt16">
-      <button class="btn btn-primary" onclick="saveCurrentReport()">儲存初步報告</button>
-      <button class="btn btn-secondary" onclick="downloadReportHTML()">下載 HTML</button>
       <button class="btn btn-secondary" onclick="location.reload()">重新開始</button>
       <button class="btn btn-primary" onclick="exportJSON()">匯出 JSON</button>
-      <button class="btn btn-purple" onclick="openHistory()">查看歷史報告</button>
     </div>
-  </div>
-
-  <!-- 模組六：歷史報告 -->
-  <div class="card hidden" id="section-6">
-    <div class="card-header"><span class="module-tag m3">模組六</span><h2 style="margin:0">歷史報告閱覽</h2></div>
-    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">報告儲存在此瀏覽器的本機儲存空間，不會上傳到 GitHub。清除瀏覽器資料後會消失。</p>
-    <div class="gap12">
-      <button class="btn btn-secondary btn-sm" onclick="renderReportHistory()">重新整理</button>
-      <button class="btn btn-secondary btn-sm" onclick="clearReportHistory()">清除全部存檔</button>
-    </div>
-    <div id="report-history-list" class="history-list"></div>
-    <div id="report-history-preview" class="history-preview hidden"></div>
   </div>
 
 </div>
 </div>
 
+<!-- ECharts 已移除，改用純 SVG 魚骨圖 -->
 <script>
 /* ══ 因子定義 ══ */
 const FACTORS=[
@@ -417,12 +367,11 @@ const MOCK_VERIFICATIONS={
 };
 
 const STATE={device:{},verificationItems:[],factors:{},confidenceResults:[],riskOutputs:{high:[],medium:[],low:[]},testPlan:{}};
-const REPORT_STORE_KEY='dmaic2_saved_reports_v1';
 let fishboneSvgMarkup='';
 
 /* ══ 工具 ══ */
 function setNav(n){
-  [1,2,3,4,5,6].forEach(i=>{
+  [1,2,3,4,5].forEach(i=>{
     const el=document.getElementById(`nav-${i}`);
     if(!el)return;
     el.classList.remove('active','done');
@@ -437,20 +386,6 @@ function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 function spin(id,on){document.getElementById(id)?.classList.toggle('hidden',!on);}
 function levelBadge(l){const m={高:['badge-high','高度風險'],中:['badge-mid','中度風險'],低:['badge-low','低風險']};const[c,t]=m[l]||['badge-low','未知'];return`<span class="level-badge ${c}">${t}</span>`;}
 function riskColor(l){return l==='高'?'#0F6E56':l==='中'?'#854F0B':'#5F5E5A';}
-function riskFill(l){return l==='高'?'#E1F5EE':l==='中'?'#FAEEDA':'#F1EFE8';}
-function escapeXml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
-function wrapText(text,maxChars=13,maxLines=2){
-  const clean=String(text||'').replace(/\s+/g,' ').trim();
-  const lines=[];
-  for(let i=0;i<clean.length&&lines.length<maxLines;i+=maxChars)lines.push(clean.slice(i,i+maxChars));
-  if(clean.length>maxChars*maxLines)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';
-  return lines.length?lines:['-'];
-}
-function svgText(lines,x,y,opt={}){
-  const anchor=opt.anchor||'middle',size=opt.size||13,weight=opt.weight||600,fill=opt.fill||'#2C2C2A',lineHeight=opt.lineHeight||17;
-  return `<text x="${x}" y="${y}" text-anchor="${anchor}" font-family="system-ui, sans-serif" font-size="${size}" font-weight="${weight}" fill="${fill}">${lines.map((line,i)=>`<tspan x="${x}" dy="${i?lineHeight:0}">${escapeXml(line)}</tspan>`).join('')}</text>`;
-}
 
 /* ══ 模組一 ══ */
 async function runModule1(){
@@ -599,77 +534,206 @@ async function runFishbone(){
   setTimeout(drawFishbone,300);
 }
 
+/* ══ 舊版 DMAIC 魚骨圖繪圖邏輯移植 ══ */
+function _measureTextWidth(text, fontSize, fontFamily){
+  var c = _measureTextWidth._canvas || (_measureTextWidth._canvas = document.createElement('canvas'));
+  var ctx = c.getContext('2d');
+  ctx.font = fontSize + 'px ' + (fontFamily||'-apple-system,sans-serif');
+  return ctx.measureText(text).width;
+}
+function wrapCauseLines(text, fontSize, maxWidth){
+  text = String(text||'');
+  if(!text) return [''];
+  if(_measureTextWidth(text, fontSize) <= maxWidth) return [text];
+  var lines = [], cur = '';
+  for(var i=0;i<text.length;i++){
+    var test = cur + text[i];
+    if(_measureTextWidth(test, fontSize) > maxWidth && cur){
+      lines.push(cur); cur = text[i];
+    } else { cur = test; }
+  }
+  if(cur) lines.push(cur);
+  return lines;
+}
+
 function drawFishbone(){
-  const dom=document.getElementById('fishbone-wrap');
+  const dom = document.getElementById('fishbone-wrap');
   if(!STATE.confidenceResults.length){
-    fishboneSvgMarkup='';
-    dom.innerHTML='<div class="fishbone-empty">請先完成信心度評估</div>';
+    dom.innerHTML='<div style="padding:2rem;text-align:center;color:#64748b;font-size:13px">請先完成信心度評估</div>';
     return;
   }
 
-  const problem=STATE.device.name||'CAPA 問題';
-  const subtitle=(STATE.device.code||'').trim();
-  const results=STATE.confidenceResults;
-  const svgW=1000,svgH=620,spineY=310;
-  const topY=168,bottomY=472;
-  const issueBox={x:812,y:252,w:154,h:116};
+  const problem = (STATE.device.name||'CAPA 問題').slice(0,14);
+  const results  = STATE.confidenceResults;
 
-  const branches=results.map((r,i)=>{
-    const level=r.confidence.level;
-    const top=i%2===0;
-    const lane=Math.floor(i/2);
-    const baseX=(top?210:275)+lane*165;
-    const tipX=top?baseX-68:baseX+68;
-    const tipY=top?topY:bottomY;
-    const rawItems=r.checks.filter(c=>!c.startsWith('無異常')&&c!=='待調查');
-    const items=rawItems.length?rawItems:[level==='低'?'無異常':'待調查'];
-    return{...r,level,top,baseX,tipX,tipY,items:items.slice(0,3)};
+  /* ── 把七因子轉成 cats 格式 ── */
+  const CAT_COLORS = {
+    '人':'#1D4ED8','機':'#0891B2','料':'#059669',
+    '法':'#D97706','環':'#BE185D','運輸與儲存':'#7C3AED',
+    '測量':'#0F766E','臨床':'#9D174D'
+  };
+  const RANK = {高:3, 中:2, 低:1};
+
+  const cats = results.map(r=>{
+    const rawItems = r.checks.filter(c=>!c.startsWith('無異常') && c!=='待調查');
+    const pending   = r.checks.includes('待調查');
+    const level     = r.confidence.level;
+    let causes = rawItems.map(name=>({
+      name, risk: level==='高'?'high': level==='中'?'medium':'low'
+    }));
+    if(!causes.length && pending) causes=[{name:'待調查',risk:'medium'}];
+    if(!causes.length && level==='低') causes=[{name:'無異常',risk:'low'}];
+    return { label: r.key+' '+r.icon, color: CAT_COLORS[r.key]||'#64748B', causes };
   });
 
-  const legend=[
-    ['高','高度風險'],['中','中度風險'],['低','低風險']
-  ].map(([level,label],i)=>`<g transform="translate(${44+i*118},40)"><circle r="6" fill="${riskColor(level)}"/><text x="14" y="5" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="${riskColor(level)}">${label}</text></g>`).join('');
+  /* ── 動態字體 ── */
+  const totalCauses = cats.reduce((s,c)=>s+(c.causes?c.causes.length:0),0);
+  const maxN = Math.max(1,...cats.map(c=>c.causes?c.causes.length:0));
+  var FZ_CAUSE,FZ_CAT,FZ_HEAD;
+  if(totalCauses<=4){FZ_CAUSE=17;FZ_CAT=19;FZ_HEAD=18;}
+  else if(totalCauses<=8){FZ_CAUSE=14;FZ_CAT=16;FZ_HEAD=16;}
+  else if(totalCauses<=14){FZ_CAUSE=12;FZ_CAT=14;FZ_HEAD=15;}
+  else{FZ_CAUSE=10;FZ_CAT=13;FZ_HEAD=14;}
+  const WRAP_MAXW=128;
+  var maxWrapLines=1;
+  cats.forEach(c=>(c.causes||[]).forEach(ca=>{
+    var n=wrapCauseLines(ca.name,FZ_CAUSE,WRAP_MAXW).length;
+    if(n>maxWrapLines)maxWrapLines=n;
+  }));
+  const LINE_H=FZ_CAUSE*1.22;
+  const MIN_GAP=Math.max(
+    totalCauses<=4?54:totalCauses<=8?44:32,
+    Math.ceil(maxWrapLines*LINE_H*0.9)
+  );
+  const T_LO=0.42,T_HI=0.94,T_SPAN=T_HI-T_LO;
 
-  const branchMarkup=branches.map((b,i)=>{
-    const color=riskColor(b.level),fill=riskFill(b.level);
-    const labelX=b.tipX,labelY=b.top?b.tipY-74:b.tipY+42;
-    const cardY=b.top?labelY-22:labelY-18;
-    const stem=`<line x1="${b.baseX}" y1="${spineY}" x2="${b.tipX}" y2="${b.tipY}" stroke="${color}" stroke-width="3" stroke-linecap="round"/>`;
-    const node=`<circle cx="${b.baseX}" cy="${spineY}" r="6" fill="${color}" stroke="#fff" stroke-width="2"/>`;
-    const card=`<g><rect x="${labelX-68}" y="${cardY}" width="136" height="50" rx="8" fill="${fill}" stroke="${color}" stroke-width="1.4"/><text x="${labelX}" y="${cardY+21}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="800" fill="${color}">${escapeXml(b.icon)} ${escapeXml(b.key)} 因子</text><text x="${labelX}" y="${cardY+39}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="${color}">${escapeXml(b.confidence.score)} / 100</text></g>`;
-    const itemMarkup=b.items.map((item,j)=>{
-      const ratio=(j+1)/(b.items.length+1);
-      const x=b.baseX+(b.tipX-b.baseX)*ratio;
-      const y=spineY+(b.tipY-spineY)*ratio;
-      const side=b.top?-1:1;
-      const chipX=x+(b.top?22:-122);
-      const chipY=y+side*(8+j*4)-18;
-      const lines=wrapText(item,12,2);
-      return `<g><line x1="${x}" y1="${y}" x2="${chipX+(b.top?0:120)}" y2="${chipY+18}" stroke="${color}" stroke-width="1" opacity=".55"/><rect x="${chipX}" y="${chipY}" width="120" height="38" rx="6" fill="#fff" stroke="${color}" stroke-width="1" opacity=".98"/>${svgText(lines,chipX+60,chipY+16,{size:10,weight:650,fill:'#2C2C2A',lineHeight:13})}</g>`;
-    }).join('');
-    return `<g data-factor="${escapeXml(b.key)}">${stem}${node}${itemMarkup}${card}</g>`;
-  }).join('');
+  /* ── 車道分配（同側多類不重疊）── */
+  const topCatIdx=[],bottomCatIdx=[];
+  cats.forEach((c,i)=>{
+    if(!c.causes||!c.causes.length)return;
+    (i%2===0?topCatIdx:bottomCatIdx).push(i);
+  });
+  const laneOf={};
+  topCatIdx.forEach((idx,k)=>{laneOf[idx]={lane:k,total:topCatIdx.length};});
+  bottomCatIdx.forEach((idx,k)=>{laneOf[idx]={lane:k,total:bottomCatIdx.length};});
+  const maxLanesEither=Math.max(topCatIdx.length,bottomCatIdx.length,1);
+  const worstLaneSpan=(T_SPAN/maxLanesEither)*(maxLanesEither>1?(1-0.32/maxLanesEither):1);
 
-  fishboneSvgMarkup=`<svg class="fishbone-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgW} ${svgH}" role="img" aria-label="CAPA 魚骨圖">
-    <defs>
-      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2C2C2A"/></marker>
-      <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity=".10"/></filter>
-    </defs>
-    <rect width="${svgW}" height="${svgH}" fill="#fbfaf6"/>
-    <rect x="28" y="22" width="360" height="52" rx="10" fill="#fff" stroke="#D3D1C7"/>
-    <text x="44" y="54" font-family="system-ui, sans-serif" font-size="15" font-weight="800" fill="#2C2C2A">CAPA Ishikawa Diagram</text>
-    ${legend}
-    <line x1="92" y1="${spineY}" x2="${issueBox.x}" y2="${spineY}" stroke="#2C2C2A" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
-    ${branchMarkup}
-    <g filter="url(#shadow)">
-      <rect x="${issueBox.x}" y="${issueBox.y}" width="${issueBox.w}" height="${issueBox.h}" rx="12" fill="#fff" stroke="#2C2C2A" stroke-width="1.6"/>
-      <text x="${issueBox.x+issueBox.w/2}" y="${issueBox.y+28}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#73726C">問題焦點</text>
-      ${svgText(wrapText(problem,11,2),issueBox.x+issueBox.w/2,issueBox.y+58,{size:17,weight:850,fill:'#2C2C2A',lineHeight:22})}
-      ${subtitle?svgText(wrapText(subtitle,18,1),issueBox.x+issueBox.w/2,issueBox.y+105,{size:11,weight:600,fill:'#73726C',lineHeight:14}):''}
-    </g>
-    <text x="44" y="590" font-family="system-ui, sans-serif" font-size="11" fill="#73726C">低風險項目仍保留於魚骨圖，供稽核追溯；ISO 條款與驗證項需由 RA/QA 確認。</text>
-  </svg>`;
-  dom.innerHTML=fishboneSvgMarkup;
+  const BONE_DX=80;
+  const BONE_DY=Math.max(totalCauses<=4?160:130,Math.ceil(MIN_GAP*(maxN-1)/worstLaneSpan));
+  const CAUSE_LEN=28;
+
+  const spineY=60+BONE_DY;
+  const VH=spineY+BONE_DY+70;
+  const VW=920;
+  const spineStartX=40;
+  const spineEndX=VW-200;
+
+  /* ── Joint X 位置（有因子靠魚頭）── */
+  const nCols=cats.length;
+  const jMin=140,jMax=spineEndX-20;
+  const MAX_GAP=nCols<=4?185:145;
+  let jStep=nCols>1?(jMax-jMin)/(nCols-1):0;
+  if(jStep>MAX_GAP)jStep=MAX_GAP;
+  const totalW=jStep*(nCols-1);
+  const jStart=(jMin+jMax)/2-totalW/2;
+  const joints=[];
+  for(let i=0;i<nCols;i++) joints.push(nCols===1?(jMin+jMax)/2:jStart+jStep*i);
+  const sortedJoints=joints.slice().sort((a,b)=>a-b);
+  const idxWithCause=[],idxEmpty=[];
+  cats.forEach((c,i)=>{if(c.causes&&c.causes.length>0)idxWithCause.push(i);else idxEmpty.push(i);});
+  const assignedJoint=new Array(nCols);
+  idxEmpty.forEach((ci,k)=>{assignedJoint[ci]=sortedJoints[k];});
+  idxWithCause.forEach((ci,k)=>{assignedJoint[ci]=sortedJoints[idxEmpty.length+k];});
+  for(let i=0;i<nCols;i++) joints[i]=assignedJoint[i];
+
+  let s=[];
+  s.push(`<defs><marker id="fb-ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 2L8 5L1 8" fill="none" stroke="context-stroke" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></marker></defs>`);
+
+  /* 脊骨 */
+  s.push(`<line x1="${spineStartX}" y1="${spineY}" x2="${spineEndX}" y2="${spineY}" stroke="#1a1a2e" stroke-width="3.5"/>`);
+
+  /* 魚頭 */
+  const hw=175,hh=78;
+  let plines=[];
+  if(problem.length<=7) plines=[problem];
+  else if(problem.length<=14) plines=[problem.slice(0,7),problem.slice(7)];
+  else plines=[problem.slice(0,7),problem.slice(7,13)+'…'];
+  s.push(`<rect x="${spineEndX}" y="${spineY-hh/2}" width="${hw}" height="${hh}" rx="10" fill="#0A66C2"/>`);
+  plines.forEach((l,i)=>{
+    const ty=spineY+(i-(plines.length-1)/2)*22;
+    s.push(`<text x="${spineEndX+hw/2}" y="${ty}" text-anchor="middle" dominant-baseline="central" fill="#fff" font-size="${FZ_HEAD}" font-weight="700" font-family="-apple-system,sans-serif">${l}</text>`);
+  });
+
+  /* 問題描述小字 */
+  const probSub=(STATE.device.code||'').trim().slice(0,20);
+  if(probSub) s.push(`<text x="${spineEndX+hw/2}" y="${spineY+hh/2+16}" text-anchor="middle" fill="#64748B" font-size="10" font-family="-apple-system,sans-serif">${probSub}</text>`);
+
+  /* ── renderBone ── */
+  function renderBone(jx,isTop,cat,catIdx){
+    const endY=isTop?spineY-BONE_DY:spineY+BONE_DY;
+    const isEmpty=!cat.causes||cat.causes.length===0;
+    const boneColor=isEmpty?'#CBD5E1':cat.color;
+    const labelTextColor=isEmpty?'#94A3B8':'#1a1a2e';
+
+    s.push(`<line x1="${jx-BONE_DX}" y1="${endY}" x2="${jx}" y2="${spineY}" stroke="${boneColor}" stroke-width="${isEmpty?'1.6':'2.5'}"/>`);
+
+    const lblW=Math.max(cat.label.length*(FZ_CAT*0.58)+18,110);
+    const lblH=FZ_CAT+14;
+    const lblX=(jx-BONE_DX)-lblW/2;
+    const lblY=isTop?endY-lblH-6:endY+6;
+    s.push(`<rect x="${lblX}" y="${lblY}" width="${lblW}" height="${lblH}" rx="5" fill="none" stroke="${boneColor}" stroke-width="1.5"/>`);
+    s.push(`<text x="${jx-BONE_DX}" y="${lblY+lblH/2}" text-anchor="middle" dominant-baseline="central" fill="${labelTextColor}" font-size="${FZ_CAT}" font-weight="700" font-family="-apple-system,sans-serif">${cat.label}</text>`);
+
+    if(isEmpty){
+      s.push(`<text x="${jx-BONE_DX}" y="${isTop?endY+18:endY-18}" text-anchor="middle" fill="#B0BAC9" font-size="${Math.max(FZ_CAUSE-2,9)}" font-style="italic" font-family="-apple-system,sans-serif">（無顯著因子）</text>`);
+      return;
+    }
+
+    const ddx=BONE_DX,ddy=isTop?BONE_DY:-BONE_DY;
+    const RANKMAP={high:3,medium:2,low:1};
+    const sorted=cat.causes.slice().sort((a,b)=>(RANKMAP[a.risk]||2)-(RANKMAP[b.risk]||2));
+    const n=sorted.length;
+    const lane=laneOf[catIdx]||{lane:0,total:1};
+    const laneSpanLocal=T_SPAN/lane.total;
+    const rawLo=T_LO+lane.lane*laneSpanLocal;
+    const rawHi=rawLo+laneSpanLocal;
+    const lanePad=lane.total>1?laneSpanLocal*(0.16/lane.total):0;
+    const myLo=rawLo+lanePad,myHi=rawHi-lanePad;
+
+    sorted.forEach((cause,ci)=>{
+      const t=n===1?(myLo+myHi)/2:myLo+(myHi-myLo)*ci/(n-1);
+      const bx=(jx-BONE_DX)+ddx*t;
+      const by=endY+ddy*t;
+      const riskColor=cause.risk==='high'?'#DC2626':cause.risk==='medium'?'#92400E':'#9CA3AF';
+      const riskWeight=cause.risk==='high'?'700':cause.risk==='medium'?'500':'400';
+      const lineColor=cause.risk==='low'?'#D1D5DB':cat.color;
+      const lineW=cause.risk==='low'?'0.9':'1.4';
+      s.push(`<line x1="${(bx-CAUSE_LEN).toFixed(1)}" y1="${by.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${lineColor}" stroke-width="${lineW}" marker-end="url(#fb-ar)"/>`);
+      const tx=(bx-CAUSE_LEN-4).toFixed(1);
+      const wrapped=wrapCauseLines(cause.name,FZ_CAUSE,WRAP_MAXW);
+      if(wrapped.length<=1){
+        s.push(`<text x="${tx}" y="${by.toFixed(1)}" text-anchor="end" dominant-baseline="central" fill="${riskColor}" font-size="${FZ_CAUSE}" font-weight="${riskWeight}" font-family="-apple-system,sans-serif" opacity="${cause.risk==='low'?'0.6':'1'}">${cause.name}</text>`);
+      } else {
+        const firstDy=(-(wrapped.length-1)/2*LINE_H+FZ_CAUSE*0.32).toFixed(1);
+        const tspans=wrapped.map((ln,li)=>`<tspan x="${tx}" dy="${li===0?firstDy:LINE_H.toFixed(1)}">${ln}</tspan>`).join('');
+        s.push(`<text x="${tx}" y="${by.toFixed(1)}" text-anchor="end" fill="${riskColor}" font-size="${FZ_CAUSE}" font-weight="${riskWeight}" font-family="-apple-system,sans-serif" opacity="${cause.risk==='low'?'0.6':'1'}">${tspans}</text>`);
+      }
+    });
+  }
+
+  cats.forEach((cat,i)=>renderBone(joints[i],i%2===0,cat,i));
+
+  /* 圖例 */
+  const legendY=VH-18;
+  [['high','高度風險','#DC2626'],['medium','中度風險','#92400E'],['low','低風險','#9CA3AF']].forEach(([,label,color],i)=>{
+    s.push(`<g transform="translate(${44+i*130},${legendY})"><circle r="5" fill="${color}"/><text x="12" y="5" font-family="-apple-system,sans-serif" font-size="11" fill="${color}">${label}</text></g>`);
+  });
+  s.push(`<text x="${VW-10}" y="${legendY+4}" text-anchor="end" font-family="-apple-system,sans-serif" font-size="10" fill="#94A3B8">低風險仍列出供稽核追溯</text>`);
+
+  const svg=`<svg xmlns="http://www.w3.org/2000/svg" width="100%" viewBox="0 0 ${VW} ${VH}" style="display:block;background:#fbfaf6;min-width:700px">\n${s.join('\n')}\n</svg>`;
+  dom.innerHTML=svg;
+  fishboneSvgMarkup=svg;
 }
 
 function downloadFishbone(){
@@ -679,7 +743,7 @@ function downloadFishbone(){
   const url=URL.createObjectURL(svgBlob);
   img.onload=()=>{
     const canvas=document.createElement('canvas');
-    canvas.width=2240;canvas.height=1240;
+    canvas.width=2200;canvas.height=1400;
     const ctx=canvas.getContext('2d');
     ctx.fillStyle='#fbfaf6';ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.drawImage(img,0,0,canvas.width,canvas.height);
@@ -695,185 +759,37 @@ function downloadFishbone(){
 /* ══ 試驗計畫書 ══ */
 async function runModule3(){
   spin('m3-spin',true);await sleep(900);spin('m3-spin',false);
-  const generatedAt=new Date().toISOString();
-  const html=buildPreliminaryReport(generatedAt);
-  STATE.testPlan={generated_at:generatedAt,html,title:makeReportTitle(generatedAt)};
+  const d=STATE.device,{high,medium,low}=STATE.riskOutputs,now=new Date().toLocaleDateString('zh-TW');
+  let html=`
+    <div style="border-bottom:2px solid var(--green);padding-bottom:12px;margin-bottom:16px">
+      <h2 style="font-size:17px">CAPA 試驗計畫書（草稿）</h2>
+      <div style="color:var(--muted);font-size:13px">器材：${d.name||'—'}　型號：${d.code||'—'}　｜　日期：${now}</div>
+    </div>
+    <div style="margin-bottom:12px;padding:10px 14px;background:var(--gray-bg);border-radius:6px;font-size:13px">
+      <b>CAPA 問題描述：</b><br>${(d.problem_description||'').replace(/\n/g,'<br>')}
+    </div>
+    <div style="margin-bottom:12px">${(()=>{
+      const all=filter510K();
+      const rel=all.filter(v=>v.relevant);
+      const exc=all.filter(v=>!v.relevant);
+      let s='<b>510k 相關驗證項（與本次問題相關）：</b><br>';
+      if(rel.length){s+=rel.map(v=>`<span style="font-size:13px">・${v.item}（${v.pdf_ref}）<span style="color:var(--green-bd);font-size:11px;margin-left:6px">[${v.matchReason}]</span></span>`).join('<br>');}
+      else{s+='<span style="color:var(--muted);font-size:13px">無相關驗證項命中</span>';}
+      if(exc.length){s+='<br><span style="font-size:12px;color:var(--muted);margin-top:4px;display:inline-block">已排除（與本次問題不相關）：'+exc.map(v=>v.item).join('、')+'</span>';}
+      return s;
+    })()}</div>
+    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">`;
+  if(high.length){html+=`<h3>一、高度風險項目（根源確認 + 驗證計畫）</h3>`;high.forEach((r,i)=>{html+=`<p style="margin-top:10px"><b>${i+1}. ${r.icon} ${r.factor} 因子</b></p><ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">${r.verifications.map((v,j)=>`<li style="margin-bottom:4px"><b>Step ${j+1}：</b>${v.item}（${v.tool}）—　${v.reason}${v.iso_suggestion?'　<span style="color:var(--muted);font-size:12px">ISO ref: '+v.iso_suggestion+'</span>':''}</li>`).join('')}</ul>`;});}
+  if(medium.length){html+=`<h3 style="margin-top:14px">二、中度風險項目（調查建議）</h3>`;medium.forEach((r,i)=>{html+=`<p style="margin-top:10px"><b>${i+1}. ${r.icon} ${r.factor} 因子</b>（相關性待確認）</p><ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">${r.investigation_items.map(it=>`<li>${it}</li>`).join('')}</ul>`;});}
+  if(low.length){html+=`<h3 style="margin-top:14px">三、低風險項目（魚骨圖記錄）</h3><ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">${low.map(r=>`<li><b>${r.icon} ${r.factor}：</b>${r.ai_reason}</li>`).join('')}</ul>`;}
+  STATE.testPlan={generated_at:new Date().toISOString()};
   document.getElementById('test-plan-output').innerHTML=html;
   show('section-5');setNav(5);document.getElementById('section-5').scrollIntoView({behavior:'smooth'});
 }
 
-function makeReportTitle(iso){
-  const d=STATE.device;
-  const date=new Date(iso).toLocaleDateString('zh-TW');
-  return `${d.name||'未命名器材'} CAPA 初步報告 ${date}`;
-}
-
-function buildPreliminaryReport(generatedAt){
-  const d=STATE.device,{high,medium,low}=STATE.riskOutputs;
-  const all=filter510K();
-  const rel=all.filter(v=>v.relevant);
-  const exc=all.filter(v=>!v.relevant);
-  const date=new Date(generatedAt).toLocaleDateString('zh-TW');
-  const reportNo=`DMAIC2-${new Date(generatedAt).getTime()}`;
-  const highRows=high.flatMap((r)=>r.verifications.map((v,i)=>`
-    <tr><td>${escapeHtml(r.factor)}</td><td>Step ${i+1}</td><td>${escapeHtml(v.item)}</td><td>${escapeHtml(v.tool)}</td><td>${escapeHtml(v.reason)}</td><td>${escapeHtml(v.iso_suggestion||'RA/QA 確認')}</td></tr>`)).join('');
-  const factorRows=STATE.confidenceResults.map(r=>`
-    <tr><td>${escapeHtml(r.key)}</td><td>${escapeHtml(r.confidence.level)}</td><td>${escapeHtml(r.confidence.score)}</td><td>${escapeHtml(r.checks.join('、'))}</td><td>${escapeHtml(r.confidence.reason)}</td></tr>`).join('');
-  const kRows=rel.map(v=>`<tr><td>${escapeHtml(v.pdf_ref)}</td><td>${escapeHtml(v.item)}</td><td>${escapeHtml(v.matchReason)}</td><td>${escapeHtml((v.hitKeywords||[]).join('、'))}</td></tr>`).join('');
-  const mediumRows=medium.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.factor)}</td><td>${escapeHtml(r.investigation_items.join('；'))}</td><td>QA 補充資料後複評</td></tr>`).join('');
-  const lowRows=low.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.factor)}</td><td>${escapeHtml(r.ai_reason)}</td><td>保留於魚骨圖供追溯</td></tr>`).join('');
-  return `
-    <article class="report-paper">
-      <div class="report-title">
-        <h2>CAPA 初步分析報告</h2>
-        <div style="font-size:13px;color:var(--muted)">Preliminary CAPA Investigation Report｜DMAIC2 模擬輔助產出</div>
-      </div>
-
-      <div class="report-meta">
-        <div><b>報告編號：</b>${reportNo}</div>
-        <div><b>產出日期：</b>${date}</div>
-        <div><b>器材名稱：</b>${escapeHtml(d.name||'—')}</div>
-        <div><b>產品代碼 / 型號：</b>${escapeHtml(d.code||'—')}</div>
-        <div><b>文件狀態：</b>初步報告，待 RA/QA 審核</div>
-        <div><b>資料來源：</b>使用者輸入 + 模擬 510(k) 對照 + 規則式 AI 輔助</div>
-      </div>
-
-      <section class="report-section">
-        <h3>1. 問題摘要</h3>
-        <p>${escapeHtml(d.problem_description||'—').replace(/\n/g,'<br>')}</p>
-      </section>
-
-      <section class="report-section">
-        <h3>2. 初步結論</h3>
-        <p>本次分析將 CAPA 問題依人、機、料、法、環、運輸與儲存、測量、臨床等因子進行初步分流。高信心因子建議進入根因確認與驗證計畫；中信心因子需由 QA 補充資料後複評；低信心因子暫列為追溯紀錄。</p>
-        <table class="report-table">
-          <tr><th>風險等級</th><th>因子數</th><th>處置方向</th></tr>
-          <tr><td>高度風險</td><td>${high.length}</td><td>進入根因確認與驗證計畫</td></tr>
-          <tr><td>中度風險</td><td>${medium.length}</td><td>提出調查需求，補證後複評</td></tr>
-          <tr><td>低風險</td><td>${low.length}</td><td>保留於魚骨圖與稽核追溯</td></tr>
-        </table>
-      </section>
-
-      <section class="report-section">
-        <h3>3. 510(k) 功能性驗證項目對照</h3>
-        ${kRows?`<table class="report-table"><tr><th>來源</th><th>驗證項目</th><th>相關理由</th><th>命中關鍵字</th></tr>${kRows}</table>`:'<p style="color:var(--muted)">目前未命中相關 510(k) 驗證項目。</p>'}
-        ${exc.length?`<p style="font-size:12px;color:var(--muted)">已排除項目：${escapeHtml(exc.map(v=>v.item).join('、'))}</p>`:''}
-      </section>
-
-      <section class="report-section">
-        <h3>4. 因子信心度矩陣</h3>
-        <table class="report-table"><tr><th>因子</th><th>等級</th><th>分數</th><th>勾選內容</th><th>判斷理由</th></tr>${factorRows}</table>
-      </section>
-
-      <section class="report-section">
-        <h3>5. 驗證與調查計畫</h3>
-        ${highRows?`<h4>5.1 高度風險驗證計畫</h4><table class="report-table"><tr><th>因子</th><th>順序</th><th>驗證項目</th><th>工具</th><th>目的</th><th>ISO / 審核</th></tr>${highRows}</table>`:'<p style="color:var(--muted)">目前無高度風險驗證項。</p>'}
-        ${mediumRows?`<h4>5.2 中度風險調查項目</h4><table class="report-table"><tr><th>#</th><th>因子</th><th>調查建議</th><th>下一步</th></tr>${mediumRows}</table>`:''}
-        ${lowRows?`<h4>5.3 低風險追溯項目</h4><table class="report-table"><tr><th>#</th><th>因子</th><th>判斷理由</th><th>紀錄方式</th></tr>${lowRows}</table>`:''}
-      </section>
-
-      <section class="report-section">
-        <h3>6. 待確認事項</h3>
-        <ul style="padding-left:20px">
-          <li>510(k) 驗證項目前為模擬萃取，正式版需由 Worker / Grounding 或 PDF 來源確認。</li>
-          <li>ISO 條款與驗證工具屬 AI 建議方向，正式文件需 RA/QA 確認適用版本。</li>
-          <li>高風險因子需補充實測數據、批次紀錄、臨床使用條件或供應商紀錄後再形成正式 CAPA 結論。</li>
-        </ul>
-      </section>
-
-      <div class="report-note">本文件為 DMAIC2 產出的初步分析報告，不等同正式核准 CAPA 文件。正式提交前需由 RA/QA/工程權責人審核、補證與簽核。</div>
-    </article>`;
-}
-
-function getReportData(){
-  return {_schema_version:'2.1',session_id:`dmaic2-${Date.now()}`,created_at:new Date().toISOString(),device_info:STATE.device,verification_items:STATE.verificationItems,capa_factors:{problem_description:STATE.device.problem_description,factors:STATE.confidenceResults.map(r=>({category:r.key,checks:r.checks,supplement:r.supplement,confidence:r.confidence}))},risk_outputs:STATE.riskOutputs,test_plan:STATE.testPlan};
-}
-
-function readSavedReports(){
-  try{return JSON.parse(localStorage.getItem(REPORT_STORE_KEY)||'[]');}
-  catch{return [];}
-}
-
-function writeSavedReports(reports){
-  localStorage.setItem(REPORT_STORE_KEY,JSON.stringify(reports.slice(0,20)));
-}
-
-function saveCurrentReport(){
-  if(!STATE.testPlan.html){alert('請先產出初步報告');return;}
-  const record={id:`report-${Date.now()}`,title:STATE.testPlan.title||makeReportTitle(new Date().toISOString()),created_at:new Date().toISOString(),device_name:STATE.device.name||'',device_code:STATE.device.code||'',html:STATE.testPlan.html,data:getReportData()};
-  const reports=readSavedReports();
-  reports.unshift(record);
-  writeSavedReports(reports);
-  renderReportHistory();
-  show('section-6');setNav(6);
-  document.getElementById('section-6').scrollIntoView({behavior:'smooth'});
-}
-
-function openHistory(){
-  renderReportHistory();
-  show('section-6');setNav(6);
-  document.getElementById('section-6').scrollIntoView({behavior:'smooth'});
-}
-
-function renderReportHistory(){
-  const list=document.getElementById('report-history-list');
-  const reports=readSavedReports();
-  document.getElementById('report-history-preview').classList.add('hidden');
-  if(!reports.length){list.innerHTML='<div class="empty-state">目前尚無已儲存報告。請先在第 5 步產出並儲存初步報告。</div>';return;}
-  list.innerHTML=reports.map(r=>`
-    <div class="history-item">
-      <div>
-        <div class="history-title">${escapeHtml(r.title)}</div>
-        <div class="history-meta">${new Date(r.created_at).toLocaleString('zh-TW')}｜${escapeHtml(r.device_name||'—')}｜${escapeHtml(r.device_code||'—')}</div>
-      </div>
-      <div class="gap12">
-        <button class="btn btn-primary btn-sm" onclick="loadSavedReport('${r.id}')">閱覽</button>
-        <button class="btn btn-secondary btn-sm" onclick="downloadSavedReport('${r.id}')">下載</button>
-        <button class="btn btn-secondary btn-sm" onclick="deleteSavedReport('${r.id}')">刪除</button>
-      </div>
-    </div>`).join('');
-}
-
-function loadSavedReport(id){
-  const report=readSavedReports().find(r=>r.id===id);
-  if(!report)return;
-  const preview=document.getElementById('report-history-preview');
-  preview.innerHTML=report.html;
-  preview.classList.remove('hidden');
-}
-
-function deleteSavedReport(id){
-  writeSavedReports(readSavedReports().filter(r=>r.id!==id));
-  renderReportHistory();
-}
-
-function clearReportHistory(){
-  if(!confirm('確定清除所有本機報告存檔？'))return;
-  localStorage.removeItem(REPORT_STORE_KEY);
-  renderReportHistory();
-}
-
-function downloadReportHTML(){
-  if(!STATE.testPlan.html){alert('請先產出初步報告');return;}
-  downloadHtmlFile(STATE.testPlan.title||'DMAIC2_CAPA_report',STATE.testPlan.html);
-}
-
-function downloadSavedReport(id){
-  const report=readSavedReports().find(r=>r.id===id);
-  if(report)downloadHtmlFile(report.title,report.html);
-}
-
-function downloadHtmlFile(title,bodyHtml){
-  const full=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><title>${escapeHtml(title)}</title><style>body{font-family:system-ui,sans-serif;background:#f7f6f2;color:#2c2c2a;padding:28px}.report-paper{max-width:920px;margin:auto;background:#fff;border:1px solid #d3d1c7;border-radius:8px;padding:28px;line-height:1.8}.report-title{border-bottom:3px solid #0F6E56;padding-bottom:12px;margin-bottom:18px}.report-title h2{font-size:22px;margin:0 0 6px}.report-meta{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #d3d1c7;border-radius:6px;overflow:hidden;margin:14px 0}.report-meta div{padding:8px 10px;border-bottom:1px solid #d3d1c7;font-size:12px}.report-meta div:nth-child(odd){border-right:1px solid #d3d1c7}.report-section{margin-top:18px}.report-section h3{font-size:15px;border-left:4px solid #1D9E75;padding-left:8px}.report-table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:12px}.report-table th,.report-table td{border:1px solid #d3d1c7;padding:7px 8px;vertical-align:top;text-align:left}.report-table th{background:#f1efe8}.report-note{background:#FAEEDA;border:1px solid #854F0B;border-radius:6px;padding:9px 12px;color:#854F0B;font-size:12px;margin-top:12px}</style></head><body>${bodyHtml}</body></html>`;
-  const a=document.createElement('a');
-  a.href=URL.createObjectURL(new Blob([full],{type:'text/html;charset=utf-8'}));
-  a.download=`${title.replace(/[\\/:*?"<>|]/g,'_')}.html`;
-  a.click();
-}
-
 /* ══ 匯出 JSON ══ */
 function exportJSON(){
-  const data=getReportData();
+  const data={_schema_version:'2.0',session_id:`dmaic2-${Date.now()}`,created_at:new Date().toISOString(),device_info:STATE.device,verification_items:STATE.verificationItems,capa_factors:{problem_description:STATE.device.problem_description,factors:STATE.confidenceResults.map(r=>({category:r.key,checks:r.checks,supplement:r.supplement,confidence:r.confidence}))},risk_outputs:STATE.riskOutputs,test_plan:STATE.testPlan};
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`dmaic2_${Date.now()}.json`;a.click();
 }
 </script>
