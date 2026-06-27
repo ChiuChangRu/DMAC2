@@ -1,0 +1,213 @@
+{
+  "_schema_version": "1.0",
+  "_note": "DMAIC2 獨立資料檔，不與 MedQA / LitDB 共用。模擬版使用，試驗 OK 後轉 API。",
+
+  "session_id": "dmaic2-demo-001",
+  "created_at": "2026-06-27T00:00:00Z",
+  "status": "draft",
+
+  "device_info": {
+    "name": "",
+    "product_code": "",
+    "applicant": "",
+    "device_class": "",
+    "fda_510k_numbers": []
+  },
+
+  "verification_items": [
+    {
+      "source": "510k",
+      "pdf_ref": "",
+      "item": "",
+      "category": ""
+    }
+  ],
+
+  "capa_factors": {
+    "problem_description": "",
+    "factors": [
+      {
+        "category": "人",
+        "description": "",
+        "ai_followup_question": "",
+        "confidence": {
+          "score": 0,
+          "level": "低",
+          "model": "",
+          "reason": "",
+          "gap_type": null
+        },
+        "sub_factors": [
+          {
+            "name": "",
+            "description": "",
+            "confidence": {
+              "score": 0,
+              "level": "低",
+              "model": "",
+              "reason": "",
+              "gap_type": null
+            },
+            "risk_level": "低",
+            "user_confirmed": false,
+            "verification_items": [
+              {
+                "source": "510k",
+                "item": "",
+                "priority": 1,
+                "priority_reason": "",
+                "iso_suggestion": "",
+                "iso_note": "AI 建議，請 RA 確認適用版本"
+              }
+            ],
+            "investigation_items": [],
+            "fishbone_reason": ""
+          }
+        ]
+      },
+      {
+        "category": "機",
+        "description": "",
+        "ai_followup_question": "",
+        "confidence": {
+          "score": 0,
+          "level": "低",
+          "model": "",
+          "reason": "",
+          "gap_type": null
+        },
+        "sub_factors": []
+      },
+      {
+        "category": "料",
+        "description": "",
+        "ai_followup_question": "",
+        "confidence": {
+          "score": 0,
+          "level": "低",
+          "model": "",
+          "reason": "",
+          "gap_type": null
+        },
+        "sub_factors": []
+      },
+      {
+        "category": "法",
+        "description": "",
+        "ai_followup_question": "",
+        "confidence": {
+          "score": 0,
+          "level": "低",
+          "model": "",
+          "reason": "",
+          "gap_type": null
+        },
+        "sub_factors": []
+      },
+      {
+        "category": "環",
+        "description": "",
+        "ai_followup_question": "",
+        "confidence": {
+          "score": 0,
+          "level": "低",
+          "model": "",
+          "reason": "",
+          "gap_type": null
+        },
+        "sub_factors": []
+      },
+      {
+        "category": "測量",
+        "description": "",
+        "ai_followup_question": "",
+        "confidence": {
+          "score": 0,
+          "level": "低",
+          "model": "",
+          "reason": "",
+          "gap_type": null
+        },
+        "sub_factors": []
+      }
+    ]
+  },
+
+  "risk_outputs": {
+    "high": [
+      {
+        "factor_category": "",
+        "sub_factor": "",
+        "root_cause_candidates": [
+          { "description": "", "confidence_weight": 0 }
+        ],
+        "root_cause_confirmed": "",
+        "verifications": [
+          {
+            "source": "510k|AI判斷|AI_ISO",
+            "item": "",
+            "tool": "SPC|MSA|IFU|供應商|量測方法開發|風險文件",
+            "priority": 1,
+            "priority_reason": "",
+            "iso_suggestion": "",
+            "iso_note": "AI 建議，請 RA 確認適用版本"
+          }
+        ],
+        "user_confirmed": false
+      }
+    ],
+    "medium": [
+      {
+        "factor_category": "",
+        "sub_factor": "",
+        "investigation_items": [
+          { "item": "", "type": "需調查|需驗證", "assignee_note": "" }
+        ]
+      }
+    ],
+    "low": [
+      {
+        "factor_category": "",
+        "sub_factor": "",
+        "ai_reason": "",
+        "fishbone_note": "列入魚骨圖，稽核追溯用"
+      }
+    ]
+  },
+
+  "test_plan": {
+    "generated_at": "",
+    "device_summary": "",
+    "problem_summary": "",
+    "high_risk_section": "",
+    "medium_risk_section": "",
+    "low_risk_section": "",
+    "ra_review_required": true,
+    "ra_review_note": "ISO 條款建議由 AI 產出，正式文件需 RA 確認版本與適用性"
+  },
+
+  "_verification_tools_ref": {
+    "SPC": "製程穩定性監控，關鍵特性持續監控",
+    "MSA": "量測系統分析 Gage R&R，排除量測誤差",
+    "IFU": "使用端問題，IFU 標示 / 人因工程 62366",
+    "供應商": "來料品質，供應商稽核",
+    "量測方法開發": "測不到的因子，開發替代指標",
+    "風險文件": "14971 風險管理，PMS，臨床評估"
+  },
+
+  "_iso_suggestions_ref": {
+    "製程確效 IQ/OQ/PQ": "§7.5.6",
+    "風險管理 14971": "§7.1",
+    "生物相容性 10993": "§7.5.5",
+    "供應商管控": "§7.4",
+    "CAPA 有效性驗證": "§8.5.2",
+    "預防措施": "§8.5.3"
+  },
+
+  "_gap_type_ref": {
+    "資訊不足": "描述太簡短，無法判斷因子相關性",
+    "描述矛盾": "填寫內容與其他因子或問題描述有邏輯衝突",
+    "方向不明": "資訊存在但指向多個可能原因",
+    "null": "信心度高，無需標示"
+  }
+}
