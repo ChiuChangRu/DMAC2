@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DMAIC2 模擬版 v6</title>
+<title>DMAIC2 模擬版 v7</title>
 <style>
 :root{
   --green:#1D9E75;--green-bg:#E1F5EE;--green-bd:#0F6E56;
@@ -154,7 +154,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 <nav class="sidenav">
   <div class="sidenav-logo">
     <h1>DMAIC2<br>CAPA 分析工具</h1>
-    <span class="ver">模擬版 v6</span>
+    <span class="ver">模擬版 v7</span>
   </div>
   <div class="nav-steps">
 
@@ -572,6 +572,11 @@ function drawFishbone(){
     '法':'#D97706','環':'#BE185D','運輸與儲存':'#7C3AED',
     '測量':'#0F766E','臨床':'#9D174D'
   };
+  const CAT_FULLNAME = {
+    '人':'人員 Man','機':'設備 Machine','料':'材料 Material',
+    '法':'方法 Method','環':'環境 Env','運輸與儲存':'運輸與儲存',
+    '測量':'測量 Measurement','臨床':'臨床 Clinical'
+  };
   const RANK = {高:3, 中:2, 低:1};
 
   const cats = results.map(r=>{
@@ -583,7 +588,7 @@ function drawFishbone(){
     }));
     if(!causes.length && pending) causes=[{name:'待調查',risk:'medium'}];
     if(!causes.length && level==='低') causes=[{name:'無異常',risk:'low'}];
-    return { label: r.key+' '+r.icon, color: CAT_COLORS[r.key]||'#64748B', causes };
+    return { label: (CAT_FULLNAME[r.key]||r.key)+' '+r.icon, color: CAT_COLORS[r.key]||'#64748B', causes };
   });
 
   /* ── 動態字體 ── */
@@ -670,7 +675,7 @@ function drawFishbone(){
   if(probSub) s.push(`<text x="${spineEndX+hw/2}" y="${spineY+hh/2+16}" text-anchor="middle" fill="#64748B" font-size="10" font-family="-apple-system,sans-serif">${probSub}</text>`);
 
   /* ── renderBone ── */
-  function renderBone(jx,isTop,cat,catIdx){
+  function renderBone(jx,isTop,cat,catIdx,maxCauseW){
     const endY=isTop?spineY-BONE_DY:spineY+BONE_DY;
     const isEmpty=!cat.causes||cat.causes.length===0;
     const boneColor=isEmpty?'#CBD5E1':cat.color;
@@ -691,9 +696,8 @@ function drawFishbone(){
     }
 
     const ddx=BONE_DX,ddy=isTop?BONE_DY:-BONE_DY;
-    const RANKMAP={high:3,medium:2,low:1};
-    const sorted=cat.causes.slice().sort((a,b)=>(RANKMAP[a.risk]||2)-(RANKMAP[b.risk]||2));
-    const n=sorted.length;
+    const causes_ordered=cat.causes;
+    const n=causes_ordered.length;
     const lane=laneOf[catIdx]||{lane:0,total:1};
     const laneSpanLocal=T_SPAN/lane.total;
     const rawLo=T_LO+lane.lane*laneSpanLocal;
@@ -701,7 +705,7 @@ function drawFishbone(){
     const lanePad=lane.total>1?laneSpanLocal*(0.16/lane.total):0;
     const myLo=rawLo+lanePad,myHi=rawHi-lanePad;
 
-    sorted.forEach((cause,ci)=>{
+    causes_ordered.forEach((cause,ci)=>{
       const t=n===1?(myLo+myHi)/2:myLo+(myHi-myLo)*ci/(n-1);
       const bx=(jx-BONE_DX)+ddx*t;
       const by=endY+ddy*t;
@@ -711,7 +715,7 @@ function drawFishbone(){
       const lineW=cause.risk==='low'?'0.9':'1.4';
       s.push(`<line x1="${(bx-CAUSE_LEN).toFixed(1)}" y1="${by.toFixed(1)}" x2="${bx.toFixed(1)}" y2="${by.toFixed(1)}" stroke="${lineColor}" stroke-width="${lineW}" marker-end="url(#fb-ar)"/>`);
       const tx=(bx-CAUSE_LEN-4).toFixed(1);
-      const wrapped=wrapCauseLines(cause.name,FZ_CAUSE,WRAP_MAXW);
+      const wrapped=wrapCauseLines(cause.name,FZ_CAUSE,maxCauseW||WRAP_MAXW);
       if(wrapped.length<=1){
         s.push(`<text x="${tx}" y="${by.toFixed(1)}" text-anchor="end" dominant-baseline="central" fill="${riskColor}" font-size="${FZ_CAUSE}" font-weight="${riskWeight}" font-family="-apple-system,sans-serif" opacity="${cause.risk==='low'?'0.6':'1'}">${cause.name}</text>`);
       } else {
@@ -722,7 +726,16 @@ function drawFishbone(){
     });
   }
 
-  cats.forEach((cat,i)=>renderBone(joints[i],i%2===0,cat,i));
+  /* 最大文字寬度 = 相鄰 joint 最小間距 × 0.75，避免文字超過下一個主因子 */
+  const sortedJointsForWidth = joints.slice().sort((a,b)=>a-b);
+  let minJointGap = BONE_DX * 2;
+  for(let i=1;i<sortedJointsForWidth.length;i++){
+    const gap = sortedJointsForWidth[i]-sortedJointsForWidth[i-1];
+    if(gap < minJointGap) minJointGap = gap;
+  }
+  const MAX_CAUSE_W = Math.max(minJointGap * 0.78, 90);
+
+  cats.forEach((cat,i)=>renderBone(joints[i],i%2===0,cat,i,MAX_CAUSE_W));
 
   /* 圖例 */
   const legendY=VH-18;
