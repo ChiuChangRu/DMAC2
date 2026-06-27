@@ -138,6 +138,27 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 .fishbone-svg{display:block;width:100%;min-width:760px;height:auto;background:#fbfaf6;}
 .fishbone-empty{height:560px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;}
 
+/* 報告 */
+.report-paper{background:#fff;border:1px solid var(--border);border-radius:8px;padding:24px 28px;font-size:13px;line-height:1.8;color:var(--text);}
+.report-title{border-bottom:3px solid var(--green-bd);padding-bottom:12px;margin-bottom:18px;}
+.report-title h2{font-size:22px;margin:0 0 6px;color:#1f2a24;}
+.report-meta{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin:14px 0;background:#fff;}
+.report-meta div{padding:8px 10px;border-bottom:1px solid var(--border);font-size:12px;}
+.report-meta div:nth-child(odd){border-right:1px solid var(--border);}
+.report-meta div:nth-last-child(-n+2){border-bottom:none;}
+.report-section{margin-top:18px;}
+.report-section h3{font-size:15px;border-left:4px solid var(--green);padding-left:8px;margin-bottom:8px;color:#1f2a24;}
+.report-table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:12px;}
+.report-table th,.report-table td{border:1px solid var(--border);padding:7px 8px;vertical-align:top;text-align:left;}
+.report-table th{background:var(--gray-bg);font-weight:700;}
+.report-note{background:var(--amber-bg);border:1px solid var(--amber-bd);border-radius:6px;padding:9px 12px;color:var(--amber-bd);font-size:12px;margin-top:12px;}
+.history-list{display:grid;gap:10px;margin-top:10px;}
+.history-item{border:1px solid var(--border);border-radius:8px;padding:12px;background:#fff;display:flex;justify-content:space-between;gap:12px;align-items:flex-start;}
+.history-title{font-weight:700;font-size:14px;}
+.history-meta{font-size:12px;color:var(--muted);margin-top:2px;}
+.history-preview{margin-top:16px;border-top:1px solid var(--border);padding-top:16px;}
+.empty-state{padding:22px;border:1px dashed var(--border);border-radius:8px;color:var(--muted);font-size:13px;text-align:center;background:#fff;}
+
 /* spinner */
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
 @keyframes spin{to{transform:rotate(360deg);}}
@@ -147,6 +168,10 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
   .sidenav{display:none;}
   .main{margin-left:0;padding:16px 12px 60px;}
   .factors-grid{grid-template-columns:1fr;}
+  .report-meta{grid-template-columns:1fr;}
+  .report-meta div:nth-child(odd){border-right:none;}
+  .report-meta div:nth-last-child(2){border-bottom:1px solid var(--border);}
+  .history-item{display:block;}
 }
 </style>
 </head>
@@ -199,8 +224,17 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
     <div class="nav-step" id="nav-5">
       <div class="nav-step-circle">5</div>
       <div class="nav-step-text">
-        <div class="nav-step-label">試驗計畫書</div>
-        <div class="nav-step-sub">匯出 + JSON</div>
+        <div class="nav-step-label">初步報告</div>
+        <div class="nav-step-sub">CAPA + 試驗計畫</div>
+      </div>
+    </div>
+    <div class="nav-connector" id="nc-5"></div>
+
+    <div class="nav-step" id="nav-6">
+      <div class="nav-step-circle">6</div>
+      <div class="nav-step-text">
+        <div class="nav-step-label">歷史報告</div>
+        <div class="nav-step-sub">存檔 + 閱覽</div>
       </div>
     </div>
 
@@ -285,21 +319,36 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
     <div id="fishbone-wrap"></div>
     <div class="gap12 mt16">
       <button class="btn btn-secondary btn-sm" onclick="downloadFishbone()">下載魚骨圖 PNG</button>
-      <button class="btn btn-primary" onclick="runModule3()"><span id="m3-spin" class="spinner hidden"></span>產出試驗計畫書</button>
+      <button class="btn btn-primary" onclick="runModule3()"><span id="m3-spin" class="spinner hidden"></span>產出初步報告</button>
     </div>
   </div>
 
-  <!-- 模組五：試驗計畫書 -->
+  <!-- 模組五：初步報告 -->
   <div class="card hidden" id="section-5">
-    <div class="card-header"><span class="module-tag m3">模組五</span><h2 style="margin:0">試驗計畫書（草稿）</h2></div>
+    <div class="card-header"><span class="module-tag m3">模組五</span><h2 style="margin:0">CAPA 初步報告與試驗計畫</h2></div>
     <div id="test-plan-output" style="font-size:14px;line-height:1.9"></div>
     <div style="margin-top:16px;padding:10px 14px;background:var(--amber-bg);border-radius:8px;font-size:13px;color:var(--amber);">
       ISO 條款建議由 AI 產出，正式文件需 RA 確認版本與適用性。
     </div>
     <div class="gap12 mt16">
+      <button class="btn btn-primary" onclick="saveCurrentReport()">儲存初步報告</button>
+      <button class="btn btn-secondary" onclick="downloadReportHTML()">下載 HTML</button>
       <button class="btn btn-secondary" onclick="location.reload()">重新開始</button>
       <button class="btn btn-primary" onclick="exportJSON()">匯出 JSON</button>
+      <button class="btn btn-purple" onclick="openHistory()">查看歷史報告</button>
     </div>
+  </div>
+
+  <!-- 模組六：歷史報告 -->
+  <div class="card hidden" id="section-6">
+    <div class="card-header"><span class="module-tag m3">模組六</span><h2 style="margin:0">歷史報告閱覽</h2></div>
+    <p style="font-size:13px;color:var(--muted);margin-bottom:12px">報告儲存在此瀏覽器的本機儲存空間，不會上傳到 GitHub。清除瀏覽器資料後會消失。</p>
+    <div class="gap12">
+      <button class="btn btn-secondary btn-sm" onclick="renderReportHistory()">重新整理</button>
+      <button class="btn btn-secondary btn-sm" onclick="clearReportHistory()">清除全部存檔</button>
+    </div>
+    <div id="report-history-list" class="history-list"></div>
+    <div id="report-history-preview" class="history-preview hidden"></div>
   </div>
 
 </div>
@@ -368,11 +417,12 @@ const MOCK_VERIFICATIONS={
 };
 
 const STATE={device:{},verificationItems:[],factors:{},confidenceResults:[],riskOutputs:{high:[],medium:[],low:[]},testPlan:{}};
+const REPORT_STORE_KEY='dmaic2_saved_reports_v1';
 let fishboneSvgMarkup='';
 
 /* ══ 工具 ══ */
 function setNav(n){
-  [1,2,3,4,5].forEach(i=>{
+  [1,2,3,4,5,6].forEach(i=>{
     const el=document.getElementById(`nav-${i}`);
     if(!el)return;
     el.classList.remove('active','done');
@@ -389,6 +439,7 @@ function levelBadge(l){const m={高:['badge-high','高度風險'],中:['badge-mi
 function riskColor(l){return l==='高'?'#0F6E56':l==='中'?'#854F0B':'#5F5E5A';}
 function riskFill(l){return l==='高'?'#E1F5EE':l==='中'?'#FAEEDA':'#F1EFE8';}
 function escapeXml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function escapeHtml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
 function wrapText(text,maxChars=13,maxLines=2){
   const clean=String(text||'').replace(/\s+/g,' ').trim();
   const lines=[];
@@ -644,37 +695,185 @@ function downloadFishbone(){
 /* ══ 試驗計畫書 ══ */
 async function runModule3(){
   spin('m3-spin',true);await sleep(900);spin('m3-spin',false);
-  const d=STATE.device,{high,medium,low}=STATE.riskOutputs,now=new Date().toLocaleDateString('zh-TW');
-  let html=`
-    <div style="border-bottom:2px solid var(--green);padding-bottom:12px;margin-bottom:16px">
-      <h2 style="font-size:17px">CAPA 試驗計畫書（草稿）</h2>
-      <div style="color:var(--muted);font-size:13px">器材：${d.name||'—'}　型號：${d.code||'—'}　｜　日期：${now}</div>
-    </div>
-    <div style="margin-bottom:12px;padding:10px 14px;background:var(--gray-bg);border-radius:6px;font-size:13px">
-      <b>CAPA 問題描述：</b><br>${(d.problem_description||'').replace(/\n/g,'<br>')}
-    </div>
-    <div style="margin-bottom:12px">${(()=>{
-      const all=filter510K();
-      const rel=all.filter(v=>v.relevant);
-      const exc=all.filter(v=>!v.relevant);
-      let s='<b>510k 相關驗證項（與本次問題相關）：</b><br>';
-      if(rel.length){s+=rel.map(v=>`<span style="font-size:13px">・${v.item}（${v.pdf_ref}）<span style="color:var(--green-bd);font-size:11px;margin-left:6px">[${v.matchReason}]</span></span>`).join('<br>');}
-      else{s+='<span style="color:var(--muted);font-size:13px">無相關驗證項命中</span>';}
-      if(exc.length){s+='<br><span style="font-size:12px;color:var(--muted);margin-top:4px;display:inline-block">已排除（與本次問題不相關）：'+exc.map(v=>v.item).join('、')+'</span>';}
-      return s;
-    })()}</div>
-    <hr style="border:none;border-top:1px solid var(--border);margin:14px 0">`;
-  if(high.length){html+=`<h3>一、高度風險項目（根源確認 + 驗證計畫）</h3>`;high.forEach((r,i)=>{html+=`<p style="margin-top:10px"><b>${i+1}. ${r.icon} ${r.factor} 因子</b></p><ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">${r.verifications.map((v,j)=>`<li style="margin-bottom:4px"><b>Step ${j+1}：</b>${v.item}（${v.tool}）—　${v.reason}${v.iso_suggestion?'　<span style="color:var(--muted);font-size:12px">ISO ref: '+v.iso_suggestion+'</span>':''}</li>`).join('')}</ul>`;});}
-  if(medium.length){html+=`<h3 style="margin-top:14px">二、中度風險項目（調查建議）</h3>`;medium.forEach((r,i)=>{html+=`<p style="margin-top:10px"><b>${i+1}. ${r.icon} ${r.factor} 因子</b>（相關性待確認）</p><ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">${r.investigation_items.map(it=>`<li>${it}</li>`).join('')}</ul>`;});}
-  if(low.length){html+=`<h3 style="margin-top:14px">三、低風險項目（魚骨圖記錄）</h3><ul style="padding-left:20px;font-size:13px;margin:6px 0 10px">${low.map(r=>`<li><b>${r.icon} ${r.factor}：</b>${r.ai_reason}</li>`).join('')}</ul>`;}
-  STATE.testPlan={generated_at:new Date().toISOString()};
+  const generatedAt=new Date().toISOString();
+  const html=buildPreliminaryReport(generatedAt);
+  STATE.testPlan={generated_at:generatedAt,html,title:makeReportTitle(generatedAt)};
   document.getElementById('test-plan-output').innerHTML=html;
   show('section-5');setNav(5);document.getElementById('section-5').scrollIntoView({behavior:'smooth'});
 }
 
+function makeReportTitle(iso){
+  const d=STATE.device;
+  const date=new Date(iso).toLocaleDateString('zh-TW');
+  return `${d.name||'未命名器材'} CAPA 初步報告 ${date}`;
+}
+
+function buildPreliminaryReport(generatedAt){
+  const d=STATE.device,{high,medium,low}=STATE.riskOutputs;
+  const all=filter510K();
+  const rel=all.filter(v=>v.relevant);
+  const exc=all.filter(v=>!v.relevant);
+  const date=new Date(generatedAt).toLocaleDateString('zh-TW');
+  const reportNo=`DMAIC2-${new Date(generatedAt).getTime()}`;
+  const highRows=high.flatMap((r)=>r.verifications.map((v,i)=>`
+    <tr><td>${escapeHtml(r.factor)}</td><td>Step ${i+1}</td><td>${escapeHtml(v.item)}</td><td>${escapeHtml(v.tool)}</td><td>${escapeHtml(v.reason)}</td><td>${escapeHtml(v.iso_suggestion||'RA/QA 確認')}</td></tr>`)).join('');
+  const factorRows=STATE.confidenceResults.map(r=>`
+    <tr><td>${escapeHtml(r.key)}</td><td>${escapeHtml(r.confidence.level)}</td><td>${escapeHtml(r.confidence.score)}</td><td>${escapeHtml(r.checks.join('、'))}</td><td>${escapeHtml(r.confidence.reason)}</td></tr>`).join('');
+  const kRows=rel.map(v=>`<tr><td>${escapeHtml(v.pdf_ref)}</td><td>${escapeHtml(v.item)}</td><td>${escapeHtml(v.matchReason)}</td><td>${escapeHtml((v.hitKeywords||[]).join('、'))}</td></tr>`).join('');
+  const mediumRows=medium.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.factor)}</td><td>${escapeHtml(r.investigation_items.join('；'))}</td><td>QA 補充資料後複評</td></tr>`).join('');
+  const lowRows=low.map((r,i)=>`<tr><td>${i+1}</td><td>${escapeHtml(r.factor)}</td><td>${escapeHtml(r.ai_reason)}</td><td>保留於魚骨圖供追溯</td></tr>`).join('');
+  return `
+    <article class="report-paper">
+      <div class="report-title">
+        <h2>CAPA 初步分析報告</h2>
+        <div style="font-size:13px;color:var(--muted)">Preliminary CAPA Investigation Report｜DMAIC2 模擬輔助產出</div>
+      </div>
+
+      <div class="report-meta">
+        <div><b>報告編號：</b>${reportNo}</div>
+        <div><b>產出日期：</b>${date}</div>
+        <div><b>器材名稱：</b>${escapeHtml(d.name||'—')}</div>
+        <div><b>產品代碼 / 型號：</b>${escapeHtml(d.code||'—')}</div>
+        <div><b>文件狀態：</b>初步報告，待 RA/QA 審核</div>
+        <div><b>資料來源：</b>使用者輸入 + 模擬 510(k) 對照 + 規則式 AI 輔助</div>
+      </div>
+
+      <section class="report-section">
+        <h3>1. 問題摘要</h3>
+        <p>${escapeHtml(d.problem_description||'—').replace(/\n/g,'<br>')}</p>
+      </section>
+
+      <section class="report-section">
+        <h3>2. 初步結論</h3>
+        <p>本次分析將 CAPA 問題依人、機、料、法、環、運輸與儲存、測量、臨床等因子進行初步分流。高信心因子建議進入根因確認與驗證計畫；中信心因子需由 QA 補充資料後複評；低信心因子暫列為追溯紀錄。</p>
+        <table class="report-table">
+          <tr><th>風險等級</th><th>因子數</th><th>處置方向</th></tr>
+          <tr><td>高度風險</td><td>${high.length}</td><td>進入根因確認與驗證計畫</td></tr>
+          <tr><td>中度風險</td><td>${medium.length}</td><td>提出調查需求，補證後複評</td></tr>
+          <tr><td>低風險</td><td>${low.length}</td><td>保留於魚骨圖與稽核追溯</td></tr>
+        </table>
+      </section>
+
+      <section class="report-section">
+        <h3>3. 510(k) 功能性驗證項目對照</h3>
+        ${kRows?`<table class="report-table"><tr><th>來源</th><th>驗證項目</th><th>相關理由</th><th>命中關鍵字</th></tr>${kRows}</table>`:'<p style="color:var(--muted)">目前未命中相關 510(k) 驗證項目。</p>'}
+        ${exc.length?`<p style="font-size:12px;color:var(--muted)">已排除項目：${escapeHtml(exc.map(v=>v.item).join('、'))}</p>`:''}
+      </section>
+
+      <section class="report-section">
+        <h3>4. 因子信心度矩陣</h3>
+        <table class="report-table"><tr><th>因子</th><th>等級</th><th>分數</th><th>勾選內容</th><th>判斷理由</th></tr>${factorRows}</table>
+      </section>
+
+      <section class="report-section">
+        <h3>5. 驗證與調查計畫</h3>
+        ${highRows?`<h4>5.1 高度風險驗證計畫</h4><table class="report-table"><tr><th>因子</th><th>順序</th><th>驗證項目</th><th>工具</th><th>目的</th><th>ISO / 審核</th></tr>${highRows}</table>`:'<p style="color:var(--muted)">目前無高度風險驗證項。</p>'}
+        ${mediumRows?`<h4>5.2 中度風險調查項目</h4><table class="report-table"><tr><th>#</th><th>因子</th><th>調查建議</th><th>下一步</th></tr>${mediumRows}</table>`:''}
+        ${lowRows?`<h4>5.3 低風險追溯項目</h4><table class="report-table"><tr><th>#</th><th>因子</th><th>判斷理由</th><th>紀錄方式</th></tr>${lowRows}</table>`:''}
+      </section>
+
+      <section class="report-section">
+        <h3>6. 待確認事項</h3>
+        <ul style="padding-left:20px">
+          <li>510(k) 驗證項目前為模擬萃取，正式版需由 Worker / Grounding 或 PDF 來源確認。</li>
+          <li>ISO 條款與驗證工具屬 AI 建議方向，正式文件需 RA/QA 確認適用版本。</li>
+          <li>高風險因子需補充實測數據、批次紀錄、臨床使用條件或供應商紀錄後再形成正式 CAPA 結論。</li>
+        </ul>
+      </section>
+
+      <div class="report-note">本文件為 DMAIC2 產出的初步分析報告，不等同正式核准 CAPA 文件。正式提交前需由 RA/QA/工程權責人審核、補證與簽核。</div>
+    </article>`;
+}
+
+function getReportData(){
+  return {_schema_version:'2.1',session_id:`dmaic2-${Date.now()}`,created_at:new Date().toISOString(),device_info:STATE.device,verification_items:STATE.verificationItems,capa_factors:{problem_description:STATE.device.problem_description,factors:STATE.confidenceResults.map(r=>({category:r.key,checks:r.checks,supplement:r.supplement,confidence:r.confidence}))},risk_outputs:STATE.riskOutputs,test_plan:STATE.testPlan};
+}
+
+function readSavedReports(){
+  try{return JSON.parse(localStorage.getItem(REPORT_STORE_KEY)||'[]');}
+  catch{return [];}
+}
+
+function writeSavedReports(reports){
+  localStorage.setItem(REPORT_STORE_KEY,JSON.stringify(reports.slice(0,20)));
+}
+
+function saveCurrentReport(){
+  if(!STATE.testPlan.html){alert('請先產出初步報告');return;}
+  const record={id:`report-${Date.now()}`,title:STATE.testPlan.title||makeReportTitle(new Date().toISOString()),created_at:new Date().toISOString(),device_name:STATE.device.name||'',device_code:STATE.device.code||'',html:STATE.testPlan.html,data:getReportData()};
+  const reports=readSavedReports();
+  reports.unshift(record);
+  writeSavedReports(reports);
+  renderReportHistory();
+  show('section-6');setNav(6);
+  document.getElementById('section-6').scrollIntoView({behavior:'smooth'});
+}
+
+function openHistory(){
+  renderReportHistory();
+  show('section-6');setNav(6);
+  document.getElementById('section-6').scrollIntoView({behavior:'smooth'});
+}
+
+function renderReportHistory(){
+  const list=document.getElementById('report-history-list');
+  const reports=readSavedReports();
+  document.getElementById('report-history-preview').classList.add('hidden');
+  if(!reports.length){list.innerHTML='<div class="empty-state">目前尚無已儲存報告。請先在第 5 步產出並儲存初步報告。</div>';return;}
+  list.innerHTML=reports.map(r=>`
+    <div class="history-item">
+      <div>
+        <div class="history-title">${escapeHtml(r.title)}</div>
+        <div class="history-meta">${new Date(r.created_at).toLocaleString('zh-TW')}｜${escapeHtml(r.device_name||'—')}｜${escapeHtml(r.device_code||'—')}</div>
+      </div>
+      <div class="gap12">
+        <button class="btn btn-primary btn-sm" onclick="loadSavedReport('${r.id}')">閱覽</button>
+        <button class="btn btn-secondary btn-sm" onclick="downloadSavedReport('${r.id}')">下載</button>
+        <button class="btn btn-secondary btn-sm" onclick="deleteSavedReport('${r.id}')">刪除</button>
+      </div>
+    </div>`).join('');
+}
+
+function loadSavedReport(id){
+  const report=readSavedReports().find(r=>r.id===id);
+  if(!report)return;
+  const preview=document.getElementById('report-history-preview');
+  preview.innerHTML=report.html;
+  preview.classList.remove('hidden');
+}
+
+function deleteSavedReport(id){
+  writeSavedReports(readSavedReports().filter(r=>r.id!==id));
+  renderReportHistory();
+}
+
+function clearReportHistory(){
+  if(!confirm('確定清除所有本機報告存檔？'))return;
+  localStorage.removeItem(REPORT_STORE_KEY);
+  renderReportHistory();
+}
+
+function downloadReportHTML(){
+  if(!STATE.testPlan.html){alert('請先產出初步報告');return;}
+  downloadHtmlFile(STATE.testPlan.title||'DMAIC2_CAPA_report',STATE.testPlan.html);
+}
+
+function downloadSavedReport(id){
+  const report=readSavedReports().find(r=>r.id===id);
+  if(report)downloadHtmlFile(report.title,report.html);
+}
+
+function downloadHtmlFile(title,bodyHtml){
+  const full=`<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><title>${escapeHtml(title)}</title><style>body{font-family:system-ui,sans-serif;background:#f7f6f2;color:#2c2c2a;padding:28px}.report-paper{max-width:920px;margin:auto;background:#fff;border:1px solid #d3d1c7;border-radius:8px;padding:28px;line-height:1.8}.report-title{border-bottom:3px solid #0F6E56;padding-bottom:12px;margin-bottom:18px}.report-title h2{font-size:22px;margin:0 0 6px}.report-meta{display:grid;grid-template-columns:repeat(2,1fr);border:1px solid #d3d1c7;border-radius:6px;overflow:hidden;margin:14px 0}.report-meta div{padding:8px 10px;border-bottom:1px solid #d3d1c7;font-size:12px}.report-meta div:nth-child(odd){border-right:1px solid #d3d1c7}.report-section{margin-top:18px}.report-section h3{font-size:15px;border-left:4px solid #1D9E75;padding-left:8px}.report-table{width:100%;border-collapse:collapse;margin:8px 0 12px;font-size:12px}.report-table th,.report-table td{border:1px solid #d3d1c7;padding:7px 8px;vertical-align:top;text-align:left}.report-table th{background:#f1efe8}.report-note{background:#FAEEDA;border:1px solid #854F0B;border-radius:6px;padding:9px 12px;color:#854F0B;font-size:12px;margin-top:12px}</style></head><body>${bodyHtml}</body></html>`;
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(new Blob([full],{type:'text/html;charset=utf-8'}));
+  a.download=`${title.replace(/[\\/:*?"<>|]/g,'_')}.html`;
+  a.click();
+}
+
 /* ══ 匯出 JSON ══ */
 function exportJSON(){
-  const data={_schema_version:'2.0',session_id:`dmaic2-${Date.now()}`,created_at:new Date().toISOString(),device_info:STATE.device,verification_items:STATE.verificationItems,capa_factors:{problem_description:STATE.device.problem_description,factors:STATE.confidenceResults.map(r=>({category:r.key,checks:r.checks,supplement:r.supplement,confidence:r.confidence}))},risk_outputs:STATE.riskOutputs,test_plan:STATE.testPlan};
+  const data=getReportData();
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'}));a.download=`dmaic2_${Date.now()}.json`;a.click();
 }
 </script>
