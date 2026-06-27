@@ -134,7 +134,9 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 .tag-ai{background:var(--blue-bg);color:var(--blue-bd);}
 
 /* 魚骨圖 */
-#fishbone-wrap{width:100%;height:480px;border-radius:10px;overflow:hidden;border:1px solid var(--border);background:var(--surface);}
+#fishbone-wrap{width:100%;min-height:540px;border-radius:10px;overflow:auto;border:1px solid var(--border);background:#fbfaf6;}
+.fishbone-svg{display:block;width:100%;min-width:760px;height:auto;background:#fbfaf6;}
+.fishbone-empty{height:560px;display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:13px;}
 
 /* spinner */
 .spinner{display:inline-block;width:14px;height:14px;border:2px solid rgba(255,255,255,.4);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;}
@@ -216,7 +218,7 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
       <div style="font-size:13px;color:var(--muted);margin-top:2px">ISO 13485 根本原因分析 + 魚骨圖 + 試驗計畫書</div>
     </div>
   </div>
-  <div class="sim-banner">模擬模式：AI 辨識由關鍵字比對模擬，510k 驗證項自動篩選相關項目，魚骨圖由 ECharts 繪製。</div>
+  <div class="sim-banner">模擬模式：AI 辨識由關鍵字比對模擬，510k 驗證項自動篩選相關項目，魚骨圖由 SVG 繪製。</div>
 
   <!-- 模組一 -->
   <div class="card" id="section-1">
@@ -303,7 +305,6 @@ label{display:block;font-size:13px;font-weight:600;margin-bottom:6px;color:var(-
 </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/echarts/5.4.3/echarts.min.js"></script>
 <script>
 /* ══ 因子定義 ══ */
 const FACTORS=[
@@ -367,7 +368,7 @@ const MOCK_VERIFICATIONS={
 };
 
 const STATE={device:{},verificationItems:[],factors:{},confidenceResults:[],riskOutputs:{high:[],medium:[],low:[]},testPlan:{}};
-let fbChart=null;
+let fishboneSvgMarkup='';
 
 /* ══ 工具 ══ */
 function setNav(n){
@@ -386,6 +387,19 @@ function sleep(ms){return new Promise(r=>setTimeout(r,ms));}
 function spin(id,on){document.getElementById(id)?.classList.toggle('hidden',!on);}
 function levelBadge(l){const m={高:['badge-high','高度風險'],中:['badge-mid','中度風險'],低:['badge-low','低風險']};const[c,t]=m[l]||['badge-low','未知'];return`<span class="level-badge ${c}">${t}</span>`;}
 function riskColor(l){return l==='高'?'#0F6E56':l==='中'?'#854F0B':'#5F5E5A';}
+function riskFill(l){return l==='高'?'#E1F5EE':l==='中'?'#FAEEDA':'#F1EFE8';}
+function escapeXml(s){return String(s??'').replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));}
+function wrapText(text,maxChars=13,maxLines=2){
+  const clean=String(text||'').replace(/\s+/g,' ').trim();
+  const lines=[];
+  for(let i=0;i<clean.length&&lines.length<maxLines;i+=maxChars)lines.push(clean.slice(i,i+maxChars));
+  if(clean.length>maxChars*maxLines)lines[lines.length-1]=lines[lines.length-1].slice(0,-1)+'…';
+  return lines.length?lines:['-'];
+}
+function svgText(lines,x,y,opt={}){
+  const anchor=opt.anchor||'middle',size=opt.size||13,weight=opt.weight||600,fill=opt.fill||'#2C2C2A',lineHeight=opt.lineHeight||17;
+  return `<text x="${x}" y="${y}" text-anchor="${anchor}" font-family="system-ui, sans-serif" font-size="${size}" font-weight="${weight}" fill="${fill}">${lines.map((line,i)=>`<tspan x="${x}" dy="${i?lineHeight:0}">${escapeXml(line)}</tspan>`).join('')}</text>`;
+}
 
 /* ══ 模組一 ══ */
 async function runModule1(){
@@ -536,64 +550,95 @@ async function runFishbone(){
 
 function drawFishbone(){
   const dom=document.getElementById('fishbone-wrap');
-  if(fbChart){fbChart.dispose();}
-  fbChart=echarts.init(dom);
-
-  const problem=STATE.device.name||'問題點';
-  const{high,medium,low}=STATE.riskOutputs;
-
-  // 建立子節點
-  function makeChildren(items,level){
-    return items.slice(0,4).map(item=>{
-      const shortItem=item.length>18?item.slice(0,18)+'…':item;
-      return{name:shortItem,value:level,label:{color:riskColor(level)},itemStyle:{color:riskColor(level)}};
-    });
+  if(!STATE.confidenceResults.length){
+    fishboneSvgMarkup='';
+    dom.innerHTML='<div class="fishbone-empty">請先完成信心度評估</div>';
+    return;
   }
 
-  const branches=STATE.confidenceResults.map(r=>{
+  const problem=STATE.device.name||'CAPA 問題';
+  const subtitle=(STATE.device.code||'').trim();
+  const results=STATE.confidenceResults;
+  const svgW=1000,svgH=620,spineY=310;
+  const topY=168,bottomY=472;
+  const issueBox={x:812,y:252,w:154,h:116};
+
+  const branches=results.map((r,i)=>{
     const level=r.confidence.level;
-    const children=makeChildren(r.checks.filter(c=>!c.startsWith('無異常')&&c!=='待調查'),level);
-    if(children.length===0)children.push({name:r.confidence.level==='低'?'無異常':'待調查',value:level,itemStyle:{color:riskColor(level)},label:{color:riskColor(level)}});
-    return{
-      name:`${r.icon} ${r.key}`,
-      value:level,
-      itemStyle:{color:riskColor(level)},
-      label:{fontWeight:'bold',color:riskColor(level)},
-      children
-    };
+    const top=i%2===0;
+    const lane=Math.floor(i/2);
+    const baseX=(top?210:275)+lane*165;
+    const tipX=top?baseX-68:baseX+68;
+    const tipY=top?topY:bottomY;
+    const rawItems=r.checks.filter(c=>!c.startsWith('無異常')&&c!=='待調查');
+    const items=rawItems.length?rawItems:[level==='低'?'無異常':'待調查'];
+    return{...r,level,top,baseX,tipX,tipY,items:items.slice(0,3)};
   });
 
-  const option={
-    backgroundColor:'#ffffff',
-    tooltip:{trigger:'item',formatter:p=>`<b>${p.name}</b>${p.data.value?'<br>風險：'+p.data.value:''}`,backgroundColor:'#fff',borderColor:'#D3D1C7',textStyle:{color:'#2C2C2A',fontSize:12}},
-    series:[{
-      type:'tree',
-      data:[{
-        name:problem,
-        label:{fontWeight:'bold',fontSize:14,color:'#2C2C2A'},
-        itemStyle:{color:'#2C2C2A'},
-        children:branches
-      }],
-      top:'5%',left:'60%',bottom:'5%',right:'8%',
-      orient:'RL',
-      symbol:'circle',symbolSize:8,
-      edgeShape:'polyline',
-      roam:true,
-      label:{position:'left',verticalAlign:'middle',align:'right',fontSize:12},
-      leaves:{label:{position:'right',verticalAlign:'middle',align:'left',fontSize:11}},
-      expandAndCollapse:false,
-      animationDuration:600,
-      lineStyle:{color:'#D3D1C7',width:1.5}
-    }]
-  };
-  fbChart.setOption(option);
-  window.addEventListener('resize',()=>fbChart&&fbChart.resize());
+  const legend=[
+    ['高','高度風險'],['中','中度風險'],['低','低風險']
+  ].map(([level,label],i)=>`<g transform="translate(${44+i*118},40)"><circle r="6" fill="${riskColor(level)}"/><text x="14" y="5" font-family="system-ui, sans-serif" font-size="12" font-weight="700" fill="${riskColor(level)}">${label}</text></g>`).join('');
+
+  const branchMarkup=branches.map((b,i)=>{
+    const color=riskColor(b.level),fill=riskFill(b.level);
+    const labelX=b.tipX,labelY=b.top?b.tipY-74:b.tipY+42;
+    const cardY=b.top?labelY-22:labelY-18;
+    const stem=`<line x1="${b.baseX}" y1="${spineY}" x2="${b.tipX}" y2="${b.tipY}" stroke="${color}" stroke-width="3" stroke-linecap="round"/>`;
+    const node=`<circle cx="${b.baseX}" cy="${spineY}" r="6" fill="${color}" stroke="#fff" stroke-width="2"/>`;
+    const card=`<g><rect x="${labelX-68}" y="${cardY}" width="136" height="50" rx="8" fill="${fill}" stroke="${color}" stroke-width="1.4"/><text x="${labelX}" y="${cardY+21}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="13" font-weight="800" fill="${color}">${escapeXml(b.icon)} ${escapeXml(b.key)} 因子</text><text x="${labelX}" y="${cardY+39}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="11" font-weight="700" fill="${color}">${escapeXml(b.confidence.score)} / 100</text></g>`;
+    const itemMarkup=b.items.map((item,j)=>{
+      const ratio=(j+1)/(b.items.length+1);
+      const x=b.baseX+(b.tipX-b.baseX)*ratio;
+      const y=spineY+(b.tipY-spineY)*ratio;
+      const side=b.top?-1:1;
+      const chipX=x+(b.top?22:-122);
+      const chipY=y+side*(8+j*4)-18;
+      const lines=wrapText(item,12,2);
+      return `<g><line x1="${x}" y1="${y}" x2="${chipX+(b.top?0:120)}" y2="${chipY+18}" stroke="${color}" stroke-width="1" opacity=".55"/><rect x="${chipX}" y="${chipY}" width="120" height="38" rx="6" fill="#fff" stroke="${color}" stroke-width="1" opacity=".98"/>${svgText(lines,chipX+60,chipY+16,{size:10,weight:650,fill:'#2C2C2A',lineHeight:13})}</g>`;
+    }).join('');
+    return `<g data-factor="${escapeXml(b.key)}">${stem}${node}${itemMarkup}${card}</g>`;
+  }).join('');
+
+  fishboneSvgMarkup=`<svg class="fishbone-svg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${svgW} ${svgH}" role="img" aria-label="CAPA 魚骨圖">
+    <defs>
+      <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#2C2C2A"/></marker>
+      <filter id="shadow" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="5" stdDeviation="5" flood-color="#000" flood-opacity=".10"/></filter>
+    </defs>
+    <rect width="${svgW}" height="${svgH}" fill="#fbfaf6"/>
+    <rect x="28" y="22" width="360" height="52" rx="10" fill="#fff" stroke="#D3D1C7"/>
+    <text x="44" y="54" font-family="system-ui, sans-serif" font-size="15" font-weight="800" fill="#2C2C2A">CAPA Ishikawa Diagram</text>
+    ${legend}
+    <line x1="92" y1="${spineY}" x2="${issueBox.x}" y2="${spineY}" stroke="#2C2C2A" stroke-width="4" stroke-linecap="round" marker-end="url(#arrow)"/>
+    ${branchMarkup}
+    <g filter="url(#shadow)">
+      <rect x="${issueBox.x}" y="${issueBox.y}" width="${issueBox.w}" height="${issueBox.h}" rx="12" fill="#fff" stroke="#2C2C2A" stroke-width="1.6"/>
+      <text x="${issueBox.x+issueBox.w/2}" y="${issueBox.y+28}" text-anchor="middle" font-family="system-ui, sans-serif" font-size="12" font-weight="800" fill="#73726C">問題焦點</text>
+      ${svgText(wrapText(problem,11,2),issueBox.x+issueBox.w/2,issueBox.y+58,{size:17,weight:850,fill:'#2C2C2A',lineHeight:22})}
+      ${subtitle?svgText(wrapText(subtitle,18,1),issueBox.x+issueBox.w/2,issueBox.y+105,{size:11,weight:600,fill:'#73726C',lineHeight:14}):''}
+    </g>
+    <text x="44" y="590" font-family="system-ui, sans-serif" font-size="11" fill="#73726C">低風險項目仍保留於魚骨圖，供稽核追溯；ISO 條款與驗證項需由 RA/QA 確認。</text>
+  </svg>`;
+  dom.innerHTML=fishboneSvgMarkup;
 }
 
 function downloadFishbone(){
-  if(!fbChart){alert('請先產出魚骨圖');return;}
-  const url=fbChart.getDataURL({type:'png',pixelRatio:2,backgroundColor:'#fff'});
-  const a=document.createElement('a');a.href=url;a.download=`fishbone_${Date.now()}.png`;a.click();
+  if(!fishboneSvgMarkup){alert('請先產出魚骨圖');return;}
+  const img=new Image();
+  const svgBlob=new Blob([fishboneSvgMarkup],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(svgBlob);
+  img.onload=()=>{
+    const canvas=document.createElement('canvas');
+    canvas.width=2240;canvas.height=1240;
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#fbfaf6';ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.drawImage(img,0,0,canvas.width,canvas.height);
+    URL.revokeObjectURL(url);
+    const a=document.createElement('a');
+    a.href=canvas.toDataURL('image/png');
+    a.download=`fishbone_${Date.now()}.png`;
+    a.click();
+  };
+  img.src=url;
 }
 
 /* ══ 試驗計畫書 ══ */
